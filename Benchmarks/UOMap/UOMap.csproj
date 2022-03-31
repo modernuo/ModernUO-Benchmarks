@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="NetFabric.Hyperlinq" Version="3.0.0-beta48" />
+    <PackageReference Include="StructLinq" Version="0.27.1" />
+  </ItemGroup>
+</Project>

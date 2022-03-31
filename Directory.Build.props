@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <PropertyGroup>
+        <Authors>Kamron Batman</Authors>
+        <Company>ModernUO</Company>
+        <Copyright>2019-2022</Copyright>
+        <TargetFramework>net6.0</TargetFramework>
+        <Platforms>x64</Platforms>
+        <PlatformTarget>x64</PlatformTarget>
+        <LangVersion>preview</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PredefinedCulturesOnly>false</PredefinedCulturesOnly>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DefineConstants>TRACE;DEBUG</DefineConstants>
+        <Optimize>false</Optimize>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\Server\Server.csproj" />
+        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\UOContent\UOContent.csproj" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    </ItemGroup>
+</Project>
