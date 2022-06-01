@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderedHashSet", "Benchmark
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UOMap", "Benchmarks\UOMap\UOMap.csproj", "{C7C47166-3159-4C13-98C9-45694011FC79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalizationInterpolation", "Benchmarks\LocalizationInterpolation\LocalizationInterpolation.csproj", "{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Debug|Any CPU.Build.0 = Debug|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Release|Any CPU.ActiveCfg = Release|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Release|Any CPU.Build.0 = Release|x64
+		{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}.Debug|Any CPU.Build.0 = Debug|x64
+		{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}.Release|Any CPU.ActiveCfg = Release|x64
+		{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}.Release|Any CPU.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
