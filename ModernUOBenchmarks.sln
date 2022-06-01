@@ -1,24 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimerWheel", "Benchmarks\TimerWheel\TimerWheel.csproj", "{C0928A43-34B7-4D33-9B71-75F70CE2E90F}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimerWheel", "Benchmarks\TimerWheel\TimerWheel.csproj", "{C0928A43-34B7-4D33-9B71-75F70CE2E90F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "ModernUO\Projects\Server\Server.csproj", "{8BE71755-9302-4292-99E9-2014C8D294CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "ModernUO\Projects\Server\Server.csproj", "{8BE71755-9302-4292-99E9-2014C8D294CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOContent", "ModernUO\Projects\UOContent\UOContent.csproj", "{6C0105CB-F0EE-429B-B930-189EA1E1DC34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UOContent", "ModernUO\Projects\UOContent\UOContent.csproj", "{6C0105CB-F0EE-429B-B930-189EA1E1DC34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledRefQueue", "Benchmarks\PooledRefQueue\PooledRefQueue.csproj", "{43CBC4DA-D271-4FA8-8EDD-C90C58E7274C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PooledRefQueue", "Benchmarks\PooledRefQueue\PooledRefQueue.csproj", "{43CBC4DA-D271-4FA8-8EDD-C90C58E7274C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rng", "Benchmarks\Rng\Rng.csproj", "{2EAF8CFF-DAEE-4D4D-A290-36001FD14495}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rng", "Benchmarks\Rng\Rng.csproj", "{2EAF8CFF-DAEE-4D4D-A290-36001FD14495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Benchmarks\Logging\Logging.csproj", "{5C38593B-7656-4025-8A64-7463B3E45BD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "Benchmarks\Logging\Logging.csproj", "{5C38593B-7656-4025-8A64-7463B3E45BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringHandling", "Benchmarks\StringHandling\StringHandling.csproj", "{F7B4B0F8-0C42-4788-829C-1E069788A9AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringHandling", "Benchmarks\StringHandling\StringHandling.csproj", "{F7B4B0F8-0C42-4788-829C-1E069788A9AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArrayPools", "Benchmarks\ArrayPools\ArrayPools.csproj", "{A086E531-D418-4B9E-A9D8-08E5D544822C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayPools", "Benchmarks\ArrayPools\ArrayPools.csproj", "{A086E531-D418-4B9E-A9D8-08E5D544822C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderedHashSet", "Benchmarks\OrderedHashSet\OrderedHashSet.csproj", "{A642E134-B3FF-491B-8C6A-2398CF1FF712}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderedHashSet", "Benchmarks\OrderedHashSet\OrderedHashSet.csproj", "{A642E134-B3FF-491B-8C6A-2398CF1FF712}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UOMap", "Benchmarks\UOMap\UOMap.csproj", "{C7C47166-3159-4C13-98C9-45694011FC79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UOMap", "Benchmarks\UOMap\UOMap.csproj", "{C7C47166-3159-4C13-98C9-45694011FC79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,8 +29,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Debug|Any CPU.Build.0 = Debug|x64
 		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0928A43-34B7-4D33-9B71-75F70CE2E90F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8BE71755-9302-4292-99E9-2014C8D294CB}.Debug|Any CPU.ActiveCfg = Debug|x64
@@ -66,5 +69,11 @@ Global
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Debug|Any CPU.Build.0 = Debug|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Release|Any CPU.ActiveCfg = Release|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Release|Any CPU.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {423C2478-9156-4692-8F78-937AB8D4D1E5}
 	EndGlobalSection
 EndGlobal
