@@ -1,8 +1,7 @@
-using System;
-using System.Buffers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
+using Server.Buffers;
 
 namespace Benchmarks.BenchmarkUtilities;
 
@@ -10,56 +9,54 @@ namespace Benchmarks.BenchmarkUtilities;
 [SimpleJob(RuntimeMoniker.Net60)]
 public class BenchmarkLocalizationInterpolation
 {
-    private string contents;
-    private string slash;
-    private string items;
-    private string stones;
-    private int totalItems;
-    private int maxItems;
-    private int totalWeight;
+    private string _contents;
+    private string _slash;
+    private string _items;
+    private string _stones;
+    private int _totalItems;
+    private int _maxItems;
+    private int _totalWeight;
+    private LocalizationEntry _entry;
 
     [GlobalSetup]
     public void Setup()
     {
-        totalItems = 50;
-        maxItems = 150;
-        totalWeight = 250;
-        contents = "Contents: ";
-        slash = "/";
-        items = " items, ";
-        stones = " stones";
+        _totalItems = 50;
+        _maxItems = 150;
+        _totalWeight = 250;
+        _contents = "Contents: ";
+        _slash = "/";
+        _items = " items, ";
+        _stones = " stones";
         
-        var arr = ArrayPool<char>.Shared.Rent(256);
-        Localization.Initialize();
+        var arr = STArrayPool<char>.Shared.Rent(256);
         
-        ArrayPool<char>.Shared.Return(arr);
+        _entry = new LocalizationEntry(
+            "enu",
+            1073841,
+            "Contents: ~1_COUNT~/~2_MAXCOUNT~ items, ~3_WEIGHT~ stones"
+        );
+
+        STArrayPool<char>.Shared.Return(arr);
     }
 
     [Benchmark]
     public string BenchmarkStringFormatter()
     {
-        if (Localization.TryGetLocalization(1073841, out var entry))
-        {
-            return string.Format(entry.Formatter, totalItems, maxItems, totalWeight);
-        }
-    
-        throw new Exception("Don't go there!");
+        return string.Format(_entry.StringFormatter, _totalItems, _maxItems, _totalWeight);
     }
 
     [Benchmark]
     public string BenchmarkLocalization()
     {
-        return Localization.Formatted(1073841, $"{totalItems}{maxItems}{totalWeight}");
+        return _entry.Format($"{_totalItems}{_maxItems}{_totalWeight}");
     }
 
     [Benchmark]
     public string BenchmarkRawStringInterpolationBaseLine()
     {
-        if (Localization.TryGetLocalization(1073841, out var entry))
-        {
-            return $"{contents}{totalItems}{slash}{maxItems}{items}{totalWeight}{stones}";
-        }
-        
-        throw new Exception("Don't go there!");
+        // The static part uses variables since the localization formatter effectively does the same thing
+        // as part of splitting the original string.
+        return $"{_contents}{_totalItems}{_slash}{_maxItems}{_items}{_totalWeight}{_stones}";
     }
 }
