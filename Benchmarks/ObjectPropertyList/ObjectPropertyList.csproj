@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
+        <ProjectReference Include="..\..\ModernUO\Projects\UOContent\UOContent.csproj" />
+    </ItemGroup>
+</Project>
