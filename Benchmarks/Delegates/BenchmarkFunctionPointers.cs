@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+using System.Runtime.CompilerServices;
 
 namespace Benchmarks.Delegates;
 
@@ -7,8 +8,8 @@ namespace Benchmarks.Delegates;
 [SimpleJob(RuntimeMoniker.Net60, warmupCount: 20, targetCount: 20)]
 public unsafe class BenchmarkFunctionPointers
 {
-    public Func<int, int, int> @delegate;
-    public delegate* managed<int, int, int> pointer;
+    public static Func<int, int, int> @delegate;
+    public static delegate* managed<int, int, int> pointer;
     public int firstNumber;
     public int secondNumber;
 
@@ -40,6 +41,7 @@ public unsafe class BenchmarkFunctionPointers
         return pointer(firstNumber, secondNumber);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static int Sum(int a, int b)
     {
         return a + b;
