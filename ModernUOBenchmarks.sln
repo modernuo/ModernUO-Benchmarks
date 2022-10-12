@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectPropertyList", "Bench
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delegates", "Benchmarks\Delegates\Delegates.csproj", "{5DF4F461-EF1E-4E04-AC8A-AEA2D120FB9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HashTypes", "Benchmarks\HashTypes\HashTypes.csproj", "{D0FCF536-CE62-42F3-855D-A08174101619}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +143,14 @@ Global
 		{5DF4F461-EF1E-4E04-AC8A-AEA2D120FB9B}.Release|Any CPU.Build.0 = Release|x64
 		{5DF4F461-EF1E-4E04-AC8A-AEA2D120FB9B}.Release|x64.ActiveCfg = Release|x64
 		{5DF4F461-EF1E-4E04-AC8A-AEA2D120FB9B}.Release|x64.Build.0 = Release|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Debug|Any CPU.Build.0 = Debug|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Debug|x64.ActiveCfg = Debug|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Debug|x64.Build.0 = Debug|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Release|Any CPU.ActiveCfg = Release|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Release|Any CPU.Build.0 = Release|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Release|x64.ActiveCfg = Release|x64
+		{D0FCF536-CE62-42F3-855D-A08174101619}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
