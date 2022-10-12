@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
+    <ProjectReference Include="..\..\ModernUO\Projects\UOContent\UOContent.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Standart.Hash.xxHash.Signed" Version="4.0.5" />
+  </ItemGroup>
+</Project>
