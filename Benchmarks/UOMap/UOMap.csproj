@@ -3,4 +3,7 @@
     <PackageReference Include="NetFabric.Hyperlinq" Version="3.0.0-beta48" />
     <PackageReference Include="StructLinq" Version="0.28.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
+  </ItemGroup>
 </Project>

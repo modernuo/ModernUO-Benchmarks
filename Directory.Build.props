@@ -23,6 +23,6 @@
     <ItemGroup>
 <!--        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\Server\Server.csproj" />-->
 <!--        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\UOContent\UOContent.csproj" />-->
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.8" />
     </ItemGroup>
 </Project>
