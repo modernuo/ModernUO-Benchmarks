@@ -3,8 +3,8 @@
     <PropertyGroup>
         <Authors>Kamron Batman</Authors>
         <Company>ModernUO</Company>
-        <Copyright>2019-2022</Copyright>
-        <TargetFramework>net6.0</TargetFramework>
+        <Copyright>2019-2023</Copyright>
+        <TargetFramework>net7.0</TargetFramework>
         <Platforms>x64</Platforms>
         <PlatformTarget>x64</PlatformTarget>
         <LangVersion>preview</LangVersion>
@@ -21,8 +21,8 @@
         <Optimize>true</Optimize>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\Server\Server.csproj" />
-        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\UOContent\UOContent.csproj" />
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+<!--        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\Server\Server.csproj" />-->
+<!--        <ProjectReference Include="$(SolutionDir)\ModernUO\Projects\UOContent\UOContent.csproj" />-->
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
     </ItemGroup>
 </Project>

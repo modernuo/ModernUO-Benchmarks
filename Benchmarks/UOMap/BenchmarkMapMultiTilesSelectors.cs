@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Benchmarks.MultiTilesSelectors;
 
-[SimpleJob(RuntimeMoniker.Net60)]
+[SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
 public class BenchmarkMapMultiTilesSelectors
 {

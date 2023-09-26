@@ -5,7 +5,7 @@ using Server.Random;
 namespace Benchmarks.Benchmarks.Rng
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net70)]
     public class BenchmarkDoubleVsFixed
     {
         private Xoshiro256PlusPlus _xoshiro256PlusPlus;

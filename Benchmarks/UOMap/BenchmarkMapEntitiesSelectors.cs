@@ -9,7 +9,7 @@ using static NetFabric.Hyperlinq.ArrayExtensions;
 
 namespace Benchmarks.EntitiesSelectors;
 
-[SimpleJob(RuntimeMoniker.Net60)]
+[SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
 public class BenchmarkMapEntitiesSelectors
 {

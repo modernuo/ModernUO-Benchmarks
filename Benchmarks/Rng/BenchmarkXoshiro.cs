@@ -6,7 +6,7 @@ using Server.Random;
 namespace Benchmarks.Benchmarks.Rng
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net70)]
     public class BenchmarkXoshiro
     {
         private Random _random;

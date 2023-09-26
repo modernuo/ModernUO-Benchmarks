@@ -6,7 +6,7 @@ using BenchmarkDotNet.Jobs;
 namespace Server;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net60, warmupCount: 20, targetCount: 20)]
+[SimpleJob(RuntimeMoniker.Net70, warmupCount: 20, iterationCount: 20)]
 public class BenchmarkTimerInserts
 {
     private const int timerCount = 1000;

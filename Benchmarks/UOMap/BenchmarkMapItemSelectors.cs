@@ -15,7 +15,7 @@ using static NetFabric.Hyperlinq.ArrayExtensions;
 
 namespace Benchmarks.ItemSelectors;
 
-[SimpleJob(RuntimeMoniker.Net60)]
+[SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
 public class BenchmarkMapItemSelectors
 {
