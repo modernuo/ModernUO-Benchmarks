@@ -196,8 +196,6 @@ public class BItem : IPoint3D, IEntity
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    int ISerializable.TypeRef => throw new NotImplementedException();
-
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
@@ -297,11 +295,6 @@ public class BItem : IPoint3D, IEntity
         throw new NotImplementedException();
     }
 
-    void ISerializable.BeforeSerialize()
-    {
-        throw new NotImplementedException();
-    }
-
     void ISerializable.Deserialize(IGenericReader reader)
     {
         throw new NotImplementedException();
@@ -313,11 +306,6 @@ public class BItem : IPoint3D, IEntity
     }
 
     void ISerializable.Delete()
-    {
-        throw new NotImplementedException();
-    }
-
-    void ISerializable.SetTypeRef(Type type)
     {
         throw new NotImplementedException();
     }
@@ -366,8 +354,6 @@ public class Mobile : IPoint3D, IEntity
     DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-    int ISerializable.TypeRef => throw new NotImplementedException();
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
@@ -468,11 +454,6 @@ public class Mobile : IPoint3D, IEntity
         throw new NotImplementedException();
     }
 
-    void ISerializable.BeforeSerialize()
-    {
-        throw new NotImplementedException();
-    }
-
     void ISerializable.Deserialize(IGenericReader reader)
     {
         throw new NotImplementedException();
@@ -484,11 +465,6 @@ public class Mobile : IPoint3D, IEntity
     }
 
     void ISerializable.Delete()
-    {
-        throw new NotImplementedException();
-    }
-
-    void ISerializable.SetTypeRef(Type type)
     {
         throw new NotImplementedException();
     }

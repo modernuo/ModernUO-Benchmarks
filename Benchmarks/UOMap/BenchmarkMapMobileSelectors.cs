@@ -157,8 +157,6 @@ public class Mobile : IPoint3D, IEntity
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    int ISerializable.TypeRef => throw new NotImplementedException();
-
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();

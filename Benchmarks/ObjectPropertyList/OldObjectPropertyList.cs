@@ -86,13 +86,15 @@ public sealed class OldObjectPropertyList : IPropertyList
         writer.WritePacketLength();
     }
 
+    public void Add(int number) => Add(number, null);
+
     public void AddHash(int val)
     {
         _hash ^= val & 0x3FFFFFF;
         _hash ^= (val >> 26) & 0x3F;
     }
 
-    public void Add(int number, string arguments = null)
+    public void Add(int number, string arguments)
     {
         if (number == 0)
         {
@@ -153,6 +155,21 @@ public sealed class OldObjectPropertyList : IPropertyList
     public void Add(string text)
     {
         Add(GetStringNumber(), text);
+    }
+
+    public void Add(int number, int value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddLocalized(int value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddLocalized(int number, int value)
+    {
+        throw new NotImplementedException();
     }
 
     public void Add(string format, string arg0)
