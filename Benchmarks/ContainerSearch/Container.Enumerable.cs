@@ -8,10 +8,6 @@ namespace Server.Items;
 public partial class TestContainer
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public FindItemsByTypeEnumerator<TestItem> FindItemsByType(bool recurse = true, Predicate<TestItem> predicate = null)
-        => FindItemsByType<TestItem>(recurse, predicate);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public FindItemsByTypeEnumerator<T> FindItemsByType<T>(bool recurse = true, Predicate<T> predicate = null)
         where T : TestItem => new(this, recurse, predicate);
 
@@ -28,17 +24,6 @@ public partial class TestContainer
         }
 
         return queue;
-    }
-
-    public PooledRefList<T> ListItemsByType<T>(bool recurse = true, Predicate<T> predicate = null) where T : TestItem
-    {
-        var list = PooledRefList<T>.Create();
-        foreach (var item in FindItemsByType(recurse, predicate))
-        {
-            list.Add(item);
-        }
-
-        return list;
     }
 
     public ref struct FindItemsByTypeEnumerator<T> where T : TestItem
@@ -86,17 +71,19 @@ public partial class TestContainer
         {
             while (_index < _items.Length)
             {
-                TestItem item = _items[_index++];
+                var item = _items[_index++];
                 if (_recurse && item is TestContainer { m_Items.Count: > 0 } c)
                 {
                     _containers.Enqueue(c);
                 }
 
-                if (item is T t && _predicate?.Invoke(t) != false)
+                if (item is not T t || _predicate?.Invoke(t) == false)
                 {
-                    _current = t;
-                    return true;
+                    continue;
                 }
+
+                _current = t;
+                return true;
             }
 
             return false;

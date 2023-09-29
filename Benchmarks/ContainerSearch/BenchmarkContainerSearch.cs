@@ -54,7 +54,7 @@ public class BenchmarkContainerSearch
     public bool FindItemsByTypeNew()
     {
         TestItem item = null;
-        foreach (var i in _container1.FindItemsByType<TestItem2>())
+        foreach (var i in _container1.FindItemsByType<TestItem2>()) // BFS
         {
             item = i;
         }
@@ -66,7 +66,7 @@ public class BenchmarkContainerSearch
     public bool FindItemsByTypeRunUO()
     {
         TestItem item = null;
-        foreach (var i in _container1.FindItemsByTypeRunUO<TestItem2>())
+        foreach (var i in _container1.FindItemsByTypeRunUO<TestItem2>()) // DFS
         {
             item = i;
         }
@@ -78,7 +78,7 @@ public class BenchmarkContainerSearch
     public bool FindItemsByTypeMUOOld()
     {
         TestItem item = null;
-        foreach (var i in _container1.FindItemsByTypeMUOOld<TestItem2>())
+        foreach (var i in _container1.FindItemsByTypeMUOOld<TestItem2>()) // BFS
         {
             item = i;
         }
