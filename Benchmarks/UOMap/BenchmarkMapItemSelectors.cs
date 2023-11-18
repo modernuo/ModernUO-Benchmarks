@@ -11,12 +11,14 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using Server.Collections;
 using static NetFabric.Hyperlinq.ArrayExtensions;
 
 namespace Benchmarks.ItemSelectors;
 
-[SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net70)]
 public class BenchmarkMapItemSelectors
 {
     private static readonly Sector sector = new();
@@ -24,9 +26,9 @@ public class BenchmarkMapItemSelectors
 
     public static Rectangle2D[] BoundsArray() => new[]
     {
-        new Rectangle2D(70, 70, 100, 100),
-        new Rectangle2D(30, 30, 100, 100),
-        new Rectangle2D(0, 0, 100, 100),
+        // new Rectangle2D(70, 70, 100, 100),
+        // new Rectangle2D(30, 30, 100, 100),
+        new Rectangle2D(0, 0, 100, 100)
     };
 
     [GlobalSetup]
@@ -36,9 +38,11 @@ public class BenchmarkMapItemSelectors
         {
             var loc = locations[j];
 
-            for (var i = 0; i < 500; ++i)
+            for (var i = 0; i < 100; ++i)
             {
-                sector.BItems.Add(new BItemDerived(loc));
+                var item = new BItemDerived(loc);
+                sector.BItems.Add(item);
+                sector.BItemsLinkList.AddLast(item);
             }
         }
     }
@@ -52,8 +56,8 @@ public class BenchmarkMapItemSelectors
         BItemDerived toRet = null;
         for (var i = sector.BItems.Count - 1; i >= 0; --i)
         {
-            var BItem = sector.BItems[i];
-            if (BItem is BItemDerived { Deleted: false, Parent: null } tItem && bounds.Contains(BItem.Location))
+            var bItem = sector.BItems[i];
+            if (bItem is BItemDerived { Deleted: false, Parent: null } tItem && bounds.Contains(bItem.Location))
             {
                 toRet = tItem;
             }
@@ -90,7 +94,7 @@ public class BenchmarkMapItemSelectors
     public BItemDerived SelectBItemsLinqStruct()
     {
         BItemDerived toRet = null;
-        foreach (BItemDerived i in SelectBItemsLinqStruct<BItemDerived>(sector, bounds))
+        foreach (var i in SelectBItemsLinqStruct<BItemDerived>(sector, bounds))
         {
             toRet = i;
         }
@@ -116,7 +120,7 @@ public class BenchmarkMapItemSelectors
     public BItemDerived SelectBItemsHyperLinq()
     {
         BItemDerived toRet = null;
-        foreach (BItemDerived i in SelectBItemsHyperlinq<BItemDerived>(sector, bounds))
+        foreach (var i in SelectBItemsHyperlinq<BItemDerived>(sector, bounds))
         {
             toRet = i;
         }
@@ -142,9 +146,9 @@ public class BenchmarkMapItemSelectors
     public BItemDerived SelectBItemsHyperLinqArrayPool()
     {
         BItemDerived toRet = null;
-        using Lease<BItemDerived> lease = SelectBItemsHyperlinq<BItemDerived>(sector, bounds).ToArray(ArrayPool<BItemDerived>.Shared);
+        using var lease = SelectBItemsHyperlinq<BItemDerived>(sector, bounds).ToArray(ArrayPool<BItemDerived>.Shared);
 
-        foreach (BItemDerived i in lease)
+        foreach (var i in lease)
         {
             toRet = i;
         }
@@ -152,12 +156,30 @@ public class BenchmarkMapItemSelectors
         return toRet;
     }
 
-    public IEnumerable<T> SelectBItemsLinq<T>(Sector s, Rectangle2D bounds) where T : BItem
+    [Benchmark]
+    public BItemDerived SelectBItemsValueLink()
+    {
+        BItemDerived toRet = null;
+
+        foreach (var i in sector.BItemsLinkList)
+        {
+            if (i is BItemDerived { Deleted: false, Parent: null } o && bounds.Contains(i.Location))
+            {
+                toRet = o;
+            }
+        }
+        
+        return toRet;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<T> SelectBItemsLinq<T>(Sector s, Rectangle2D bounds) where T : BItem
     {
         return s.BItems.OfType<T>().Where(o => o is { Deleted: false, Parent: null } && bounds.Contains(o.Location));
     }
 
-    public IEnumerable<T> SelectBItems<T>(Sector s, Rectangle2D bounds) where T : BItem
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<T> SelectBItems<T>(Sector s, Rectangle2D bounds) where T : BItem
     {
         var items = s.BItems;
         List<T> entities = new(items.Count);
@@ -172,7 +194,8 @@ public class BenchmarkMapItemSelectors
         return entities;
     }
 
-    public SelectEnumerable<BItem, T, WhereEnumerable<BItem, ListEnumerable<BItem>, ArrayStructEnumerator<BItem>, BItemWhere<T>>,
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SelectEnumerable<BItem, T, WhereEnumerable<BItem, ListEnumerable<BItem>, ArrayStructEnumerator<BItem>, BItemWhere<T>>,
             WhereEnumerator<BItem, ArrayStructEnumerator<BItem>, BItemWhere<T>>, BItemSelect<T>>
         SelectBItemsLinqStruct<T>(Sector s, Rectangle2D bounds) where T : BItem
     {
@@ -184,7 +207,8 @@ public class BenchmarkMapItemSelectors
             .Select(ref bitemSelect, x => x, x => x);
     }
 
-    public ArraySegmentWhereSelectEnumerable<BItem, T, BItemWhereHyper<T>, SelectHyper<BItem, T>>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ArraySegmentWhereSelectEnumerable<BItem, T, BItemWhereHyper<T>, SelectHyper<BItem, T>>
         SelectBItemsHyperlinq<T>(Sector s, Rectangle2D bounds) where T : BItem
     {
         return s.BItems.AsValueEnumerable()
@@ -193,7 +217,7 @@ public class BenchmarkMapItemSelectors
     }
 }
 
-public class BItem : IPoint3D, IEntity
+public class BItem(Point3D location) : IEntity, IValueLinkListNode<BItem>
 {
     public object Parent { get; set; } = null;
 
@@ -207,7 +231,7 @@ public class BItem : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; }
+    public Point3D Location { get; } = location;
 
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -215,7 +239,7 @@ public class BItem : IPoint3D, IEntity
 
     public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int Hue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Direction Direction { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
+    public Direction Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public int TypeRef => throw new NotImplementedException();
@@ -229,18 +253,12 @@ public class BItem : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
-
-    public BItem(Point3D location)
-    {
-        Location = location;
-    }
 
     public void Delete()
     {
@@ -252,7 +270,7 @@ public class BItem : IPoint3D, IEntity
         throw new NotImplementedException();
     }
 
-    public void OnStatsQuery(Server.Mobile m)
+    public void OnStatsQuery(Mobile m)
     {
         throw new NotImplementedException();
     }
@@ -331,26 +349,26 @@ public class BItem : IPoint3D, IEntity
     {
         throw new NotImplementedException();
     }
+
+    public BItem Next { get; set; }
+    public BItem Previous { get; set; }
+    public bool OnLinkList { get; set; }
 }
 
-public class BItemDerived : BItem
-{
-    public BItemDerived(Point3D location) : base(location) { }
-}
+public class BItemDerived(Point3D location) : BItem(location);
 
 public class Sector
 {
     public List<BItem> BItems { get; set; } = new();
+    private ValueLinkList<BItem> _linkList;
+
+    public ref ValueLinkList<BItem> BItemsLinkList => ref _linkList;
 }
 
-public struct BItemWhere<T> : StructLinq.IFunction<BItem, bool> where T : BItem
+public struct BItemWhere<T>(Rectangle2D bounds) : StructLinq.IFunction<BItem, bool>
+    where T : BItem
 {
-    private readonly Rectangle2D bounds;
-
-    public BItemWhere(Rectangle2D bounds)
-    {
-        this.bounds = bounds;
-    }
+    private readonly Rectangle2D bounds = bounds;
 
     public bool Eval(BItem element)
     {
@@ -366,14 +384,10 @@ public struct BItemSelect<T> : StructLinq.IFunction<BItem, T> where T : BItem
     }
 }
 
-public struct BItemWhereHyper<T> : NetFabric.Hyperlinq.IFunction<BItem, bool> where T : BItem
+public struct BItemWhereHyper<T>(Rectangle2D bounds) : NetFabric.Hyperlinq.IFunction<BItem, bool>
+    where T : BItem
 {
-    private readonly Rectangle2D bounds;
-
-    public BItemWhereHyper(Rectangle2D bounds)
-    {
-        this.bounds = bounds;
-    }
+    private readonly Rectangle2D bounds = bounds;
 
     public bool Invoke(BItem element)
     {

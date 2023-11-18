@@ -174,7 +174,7 @@ public class BenchmarkMapMultiTilesSelectors
     }
 }
 
-public class BItem : IPoint3D, IEntity
+public class BItem(Point3D location) : IPoint3D, IEntity
 {
     public object Parent { get; set; } = null;
 
@@ -188,7 +188,7 @@ public class BItem : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; }
+    public Point3D Location { get; } = location;
 
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -196,7 +196,7 @@ public class BItem : IPoint3D, IEntity
 
     public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int Hue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Direction Direction { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
+    public Direction Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public int TypeRef => throw new NotImplementedException();
@@ -208,18 +208,12 @@ public class BItem : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
-
-    public BItem(Point3D location)
-    {
-        Location = location;
-    }
 
     public void Delete()
     {
@@ -231,7 +225,7 @@ public class BItem : IPoint3D, IEntity
         throw new NotImplementedException();
     }
 
-    public void OnStatsQuery(Server.Mobile m)
+    public void OnStatsQuery(Mobile m)
     {
         throw new NotImplementedException();
     }

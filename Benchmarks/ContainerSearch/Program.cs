@@ -1,4 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
 using Benchmarks;
 
-var containerSearch = BenchmarkRunner.Run<BenchmarkContainerSearch>();
+var containerSearch = BenchmarkRunner.Run<BenchmarkPredicates>();

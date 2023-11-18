@@ -145,17 +145,17 @@ public class BenchmarkMapEntitiesSelectors
 
     public IEnumerable<IEntity> SelectEntitiesHyperlinq(Sector s, Rectangle2D bounds)
     {
-        ArraySegmentWhereSelectEnumerable<Mobile, IEntity, MobileWhereHyper, SelectHyper<Mobile, IEntity>> mobiles =
+        var mobiles =
             s.Mobiles.AsValueEnumerable().Where(new MobileWhereHyper(bounds)).Select<IEntity, SelectHyper<Mobile, IEntity>>();
 
-        ArraySegmentWhereSelectEnumerable<BItem, IEntity, BItemWhereHyper, SelectHyper<BItem, IEntity>> items =
+        var items =
             s.BItems.AsValueEnumerable().Where(new BItemWhereHyper(bounds)).Select<IEntity, SelectHyper<BItem, IEntity>>();
 
         return mobiles.Concat(items);
     }
 }
 
-public class BItem : IPoint3D, IEntity
+public class BItem(Point3D location) : IPoint3D, IEntity
 {
     public object Parent { get; set; } = null;
 
@@ -169,14 +169,14 @@ public class BItem : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; }
+    public Point3D Location { get; } = location;
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public Region Region => throw new NotImplementedException();
 
     public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int Hue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public Direction Direction { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
+    public Direction Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public int TypeRef => throw new NotImplementedException();
@@ -192,18 +192,12 @@ public class BItem : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
-
-    public BItem(Point3D location)
-    {
-        Location = location;
-    }
 
     public void Delete()
     {
@@ -316,7 +310,7 @@ public class BItem : IPoint3D, IEntity
     }
 }
 
-public class Mobile : IPoint3D, IEntity
+public class Mobile(Point3D location) : IPoint3D, IEntity
 {
     public bool Deleted { get; set; } = false;
 
@@ -328,13 +322,13 @@ public class Mobile : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; }
+    public Point3D Location { get; } = location;
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public Region Region => throw new NotImplementedException();
 
     public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public int Hue { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
+    public int Hue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public Direction Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -351,18 +345,12 @@ public class Mobile : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
-
-    public Mobile(Point3D location)
-    {
-        Location = location;
-    }
 
     public void Delete()
     {
@@ -481,14 +469,9 @@ public class Sector
     public List<Mobile> Mobiles { get; set; } = new();
 }
 
-public struct BItemWhereHyper : NetFabric.Hyperlinq.IFunction<BItem, bool>
+public struct BItemWhereHyper(Rectangle2D bounds) : IFunction<BItem, bool>
 {
-    private readonly Rectangle2D bounds;
-
-    public BItemWhereHyper(Rectangle2D bounds)
-    {
-        this.bounds = bounds;
-    }
+    private readonly Rectangle2D bounds = bounds;
 
     public bool Invoke(BItem element)
     {
@@ -496,14 +479,9 @@ public struct BItemWhereHyper : NetFabric.Hyperlinq.IFunction<BItem, bool>
     }
 }
 
-public struct MobileWhereHyper : NetFabric.Hyperlinq.IFunction<Mobile, bool>
+public struct MobileWhereHyper(Rectangle2D bounds) : IFunction<Mobile, bool>
 {
-    private readonly Rectangle2D bounds;
-
-    public MobileWhereHyper(Rectangle2D bounds)
-    {
-        this.bounds = bounds;
-    }
+    private readonly Rectangle2D bounds = bounds;
 
     public bool Invoke(Mobile element)
     {
@@ -511,7 +489,7 @@ public struct MobileWhereHyper : NetFabric.Hyperlinq.IFunction<Mobile, bool>
     }
 }
 
-public struct SelectHyper<TSource, TDest> : NetFabric.Hyperlinq.IFunction<TSource, TDest> where TSource : TDest
+public struct SelectHyper<TSource, TDest> : IFunction<TSource, TDest> where TSource : TDest
 {
     public TDest Invoke(TSource arg)
     {

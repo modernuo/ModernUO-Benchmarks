@@ -84,7 +84,7 @@ public class BenchmarkMapMobileSelectors
     public MobileDerived SelectMobilesHyperLinq()
     {
         MobileDerived toRet = null;
-        foreach (MobileDerived m in SelectMobilesHyperlinq<MobileDerived>(sector, bounds))
+        foreach (var m in SelectMobilesHyperlinq<MobileDerived>(sector, bounds))
         {
             toRet = m;
         }
@@ -121,7 +121,7 @@ public class BenchmarkMapMobileSelectors
     }
 }
 
-public class Mobile : IPoint3D, IEntity
+public class Mobile(Point3D location) : IPoint3D, IEntity
 {
     public bool Deleted { get; set; } = false;
 
@@ -133,14 +133,14 @@ public class Mobile : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; }
+    public Point3D Location { get; } = location;
 
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public Region Region => throw new NotImplementedException();
 
     public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public int Hue { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
+    public int Hue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public Direction Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -153,18 +153,12 @@ public class Mobile : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    DateTime ISerializable.LastSerialized { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
     bool ISerializable.Deleted => throw new NotImplementedException();
-
-    public Mobile(Point3D location)
-    {
-        Location = location;
-    }
 
     public void MoveToWorld(Point3D location, Map map)
     {
@@ -217,24 +211,17 @@ public class Mobile : IPoint3D, IEntity
     }
 }
 
-public class MobileDerived : Mobile
-{
-    public MobileDerived(Point3D location) : base(location) { }
-}
+public class MobileDerived(Point3D location) : Mobile(location);
 
 public class Sector
 {
     public List<Mobile> Mobiles { get; set; } = new();
 }
 
-public struct MobileWhereHyper<T> : NetFabric.Hyperlinq.IFunction<Mobile, bool> where T : Mobile
+public struct MobileWhereHyper<T>(Rectangle2D bounds) : IFunction<Mobile, bool>
+    where T : Mobile
 {
-    private readonly Rectangle2D bounds;
-
-    public MobileWhereHyper(Rectangle2D bounds)
-    {
-        this.bounds = bounds;
-    }
+    private readonly Rectangle2D bounds = bounds;
 
     public bool Invoke(Mobile element)
     {
@@ -242,7 +229,7 @@ public struct MobileWhereHyper<T> : NetFabric.Hyperlinq.IFunction<Mobile, bool> 
     }
 }
 
-public struct SelectHyper<TSource, TDest> : NetFabric.Hyperlinq.IFunction<TSource, TDest> where TDest : TSource
+public struct SelectHyper<TSource, TDest> : IFunction<TSource, TDest> where TDest : TSource
 {
     public TDest Invoke(TSource arg)
     {
