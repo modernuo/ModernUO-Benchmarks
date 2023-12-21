@@ -9,7 +9,7 @@ using static NetFabric.Hyperlinq.ArrayExtensions;
 
 namespace Benchmarks.MultiSelectors;
 
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net80)]
 [MemoryDiagnoser]
 public class BenchmarkMapMultiSelectors
 {

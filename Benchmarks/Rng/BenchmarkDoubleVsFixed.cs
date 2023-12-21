@@ -5,7 +5,7 @@
 //namespace Benchmarks.Benchmarks.Rng
 //{
 //    [MemoryDiagnoser]
-//    [SimpleJob(RuntimeMoniker.Net70)]
+//    [SimpleJob(RuntimeMoniker.Net80)]
 //    public class BenchmarkDoubleVsFixed
 //    {
 //        private Xoshiro256PlusPlus _xoshiro256PlusPlus;

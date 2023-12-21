@@ -6,7 +6,7 @@
 //namespace Benchmarks.Benchmarks.Rng
 //{
 //    [MemoryDiagnoser]
-//    [SimpleJob(RuntimeMoniker.Net70)]
+//    [SimpleJob(RuntimeMoniker.Net80)]
 //    public class BenchmarkXoshiro
 //    {
 //        private Random _random;

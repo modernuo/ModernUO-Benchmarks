@@ -6,7 +6,7 @@ using Server.Collections;
 namespace UOMap;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net80)]
 public class BenchmarkSectorValueLink
 {
     private static Map map = new(0, 0, 0, 4096, 4096, 0, "Test Map", MapRules.FeluccaRules);
