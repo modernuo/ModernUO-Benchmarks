@@ -308,6 +308,21 @@ public class BItem(Point3D location) : IPoint3D, IEntity
     {
         throw new NotImplementedException();
     }
+
+    public bool OnMoveOff(Server.Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOver(Server.Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnMovement(Server.Mobile m, Point3D oldLocation)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class Mobile(Point3D location) : IPoint3D, IEntity
@@ -458,6 +473,21 @@ public class Mobile(Point3D location) : IPoint3D, IEntity
     }
 
     public void RemoveItem(Item item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOff(Server.Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOver(Server.Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnMovement(Server.Mobile m, Point3D oldLocation)
     {
         throw new NotImplementedException();
     }

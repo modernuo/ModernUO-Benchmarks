@@ -304,6 +304,21 @@ public class BItem(Point3D location) : IPoint3D, IEntity
     {
         throw new NotImplementedException();
     }
+
+    public bool OnMoveOff(Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOver(Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnMovement(Mobile m, Point3D oldLocation)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class BaseMulti : BItem

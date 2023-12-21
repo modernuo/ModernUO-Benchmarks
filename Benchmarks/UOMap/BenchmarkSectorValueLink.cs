@@ -29,18 +29,18 @@ public class BenchmarkSectorValueLink
         }
     }
 
-    [Benchmark]
-    public IEntity SelectEntities()
-    {
-        var p = new Point3D();
-        IEntity toRet = null;
-        foreach (var item in map.GetObjectsInRange(p, 8))
-        {
-            toRet = item;
-        }
+    //[Benchmark]
+    //public IEntity SelectEntities()
+    //{
+    //    var p = new Point3D();
+    //    IEntity toRet = null;
+    //    foreach (var item in map.GetObjectsInRange(p, 8))
+    //    {
+    //        toRet = item;
+    //    }
 
-        return toRet;
-    }
+    //    return toRet;
+    //}
     
     [Benchmark]
     public IEntity GetItemsValueLink()
@@ -55,18 +55,18 @@ public class BenchmarkSectorValueLink
         return toRet;
     }
     
-    [Benchmark]
-    public IEntity GetItemsInSector()
-    {
-        var p = new Point3D();
-        var sector = map.GetSector(p);
+    //[Benchmark]
+    //public IEntity GetItemsInSector()
+    //{
+    //    var p = new Point3D();
+    //    var sector = map.GetSector(p);
         
-        IEntity toRet = null;
-        foreach (var item in sector.Items)
-        {
-            toRet = item;
-        }
+    //    IEntity toRet = null;
+    //    foreach (var item in sector.Items)
+    //    {
+    //        toRet = item;
+    //    }
 
-        return toRet;
-    }
+    //    return toRet;
+    //}
 }
