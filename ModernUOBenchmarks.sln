@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestNullable", "Benchmarks\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContainerSearch", "Benchmarks\ContainerSearch\ContainerSearch.csproj", "{BBF391CE-BF4D-408A-B24B-FDA1247FC2E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gumps", "Gumps\Gumps.csproj", "{BCFCD864-F389-45C2-8281-2B8F9AC3672C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,8 +183,19 @@ Global
 		{BBF391CE-BF4D-408A-B24B-FDA1247FC2E6}.Release|Any CPU.Build.0 = Release|x64
 		{BBF391CE-BF4D-408A-B24B-FDA1247FC2E6}.Release|x64.ActiveCfg = Release|x64
 		{BBF391CE-BF4D-408A-B24B-FDA1247FC2E6}.Release|x64.Build.0 = Release|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Debug|Any CPU.Build.0 = Debug|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Debug|x64.ActiveCfg = Debug|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Debug|x64.Build.0 = Debug|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Release|Any CPU.ActiveCfg = Release|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Release|Any CPU.Build.0 = Release|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Release|x64.ActiveCfg = Release|x64
+		{BCFCD864-F389-45C2-8281-2B8F9AC3672C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD8ED718-F938-418B-A436-FA76C0C1A8FD}
 	EndGlobalSection
 EndGlobal
