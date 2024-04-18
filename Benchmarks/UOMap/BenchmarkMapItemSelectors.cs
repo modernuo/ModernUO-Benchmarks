@@ -18,7 +18,7 @@ using static NetFabric.Hyperlinq.ArrayExtensions;
 namespace Benchmarks.ItemSelectors;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net80)]
 public class BenchmarkMapItemSelectors
 {
     private static readonly Sector sector = new();
@@ -346,6 +346,21 @@ public class BItem(Point3D location) : IEntity, IValueLinkListNode<BItem>
     }
 
     public void RemoveItem(Item item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOff(Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool OnMoveOver(Mobile m)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnMovement(Mobile m, Point3D oldLocation)
     {
         throw new NotImplementedException();
     }

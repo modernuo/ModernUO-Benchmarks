@@ -4,7 +4,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks;
 
 [DisassemblyDiagnoser]
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net80)]
 [SimpleJob(RuntimeMoniker.Net80)]
 public class BenchmarkNullable
 {
