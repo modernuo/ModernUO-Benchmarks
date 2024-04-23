@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNullable", "Benchmarks\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContainerSearch", "Benchmarks\ContainerSearch\ContainerSearch.csproj", "{BBF391CE-BF4D-408A-B24B-FDA1247FC2E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWhileLoop", "TestWhileLoop\TestWhileLoop.csproj", "{0CAFE79B-949E-4C08-9BC3-769B3F79B4B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWhileLoop", "Benchmarks\TestWhileLoop\TestWhileLoop.csproj", "{0CAFE79B-949E-4C08-9BC3-769B3F79B4B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
