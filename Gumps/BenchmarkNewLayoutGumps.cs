@@ -1,11 +1,13 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Buffers;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+using Gumps;
 using Gumps.MockedGumps;
 
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 40, iterationCount: 40)]
+[SimpleJob(RuntimeMoniker.Net80)]
 public class BenchmarkNewLayoutGumps
 {
     private string _petName = "a horse";
@@ -25,35 +27,41 @@ public class BenchmarkNewLayoutGumps
     //     gump.CreateGumpPacket();
     // }
     
-    // [Benchmark(Baseline = true)]
-    // [BenchmarkCategory("StaticLayout")]
-    // public void OldGump()
-    // {
-    //     OldPetResurrectGump gump = new(_petName);
-    //     FakeSender.SendOldGump(gump, out _, out _);
-    // }
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("StaticLayout")]
+    public void OldGump()
+    {
+        OldPetResurrectGump gump = new(_petName);
+        FakeSender.SendOldGump(gump, out _, out _);
+    }
     
-    // [Benchmark]
-    // [BenchmarkCategory("StaticLayout")]
-    // public void DynamicLayoutGump()
-    // {
-    //     NewDynamicLayoutPetResurrectGump gump = new(_petName);
-    //     gump.CreatePacket();
-    // }
+    [Benchmark]
+    [BenchmarkCategory("StaticLayout")]
+    public void DynamicLayoutGump()
+    {
+        NewDynamicLayoutPetResurrectGump gump = new(_petName);
+        var writer = new SpanWriter(0x10000);
+        gump.CreatePacket(ref writer);
+        writer.Dispose();
+    }
 
     [Benchmark]
     [BenchmarkCategory("StaticLayout")]
     public void StaticLayoutDynamicStringsGump()
     {
         NewPetResurrectGump gump = new(_petName);
-        gump.CreatePacket();
+        var writer = new SpanWriter(0x10000);
+        gump.CreatePacket(ref writer);
+        writer.Dispose();
     }
     
-    // [Benchmark]
-    // [BenchmarkCategory("StaticLayout")]
-    // public void StaticLayoutGump()
-    // {
-    //     NewPetStaticResurrectGump gump = new();
-    //     gump.CreatePacket();
-    // }
+    [Benchmark]
+    [BenchmarkCategory("StaticLayout")]
+    public void StaticLayoutGump()
+    {
+        NewPetStaticResurrectGump gump = new();
+        var writer = new SpanWriter(0x10000);
+        gump.CreatePacket(ref writer);
+        writer.Dispose();
+    }
 }
