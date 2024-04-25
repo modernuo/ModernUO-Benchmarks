@@ -9,7 +9,7 @@ public sealed class NewPetStaticResurrectGump : StaticLayoutGump<NewPetStaticRes
     {
     }
 
-    protected override void BuildStaticLayout(ref GumpBuilder builder)
+    protected override void BuildLayout(ref StaticGumpBuilder builder)
     {
         builder.AddPage();
 
@@ -27,5 +27,9 @@ public sealed class NewPetStaticResurrectGump : StaticLayoutGump<NewPetStaticRes
 
         builder.AddButton(40, 105, 0x81A, 0x81B, 0x1); // Okay
         builder.AddButton(110, 105, 0x819, 0x818, 0x2); // Cancel
+    }
+
+    protected override void BuildStrings(ref GumpStringsBuilder builder)
+    {
     }
 }

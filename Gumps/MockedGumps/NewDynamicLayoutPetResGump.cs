@@ -1,5 +1,4 @@
 using Server.Gumps;
-using Server.Gumps.Dynamic;
 
 namespace Gumps.MockedGumps;
 
@@ -12,7 +11,7 @@ public sealed class NewDynamicLayoutPetResurrectGump : DynamicLayoutGump
         _petName = petName;
     }
 
-    protected override void BuildLayout(ref GumpBuilder builder)
+    protected override void BuildLayout(ref DynamicGumpBuilder builder)
     {
         builder.AddPage();
 

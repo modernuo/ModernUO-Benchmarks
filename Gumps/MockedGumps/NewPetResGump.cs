@@ -12,7 +12,7 @@ public sealed class NewPetResurrectGump : StaticLayoutGump<NewPetResurrectGump>
         _petName = petName;
     }
 
-    protected override void BuildStaticLayout(ref GumpBuilder builder)
+    protected override void BuildLayout(ref StaticGumpBuilder builder)
     {
         builder.AddPage();
 

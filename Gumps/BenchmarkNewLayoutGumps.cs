@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Gumps;
@@ -7,9 +8,10 @@ using Gumps.MockedGumps;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net80, warmupCount: 40, iterationCount: 40)]
 public class BenchmarkNewLayoutGumps
 {
+    private static readonly byte[] _packetBuffer = GC.AllocateUninitializedArray<byte>(0x10000);
     private string _petName = "a horse";
     // [Benchmark(Baseline = true)]
     // [BenchmarkCategory("DynamicLayout")]
@@ -40,7 +42,7 @@ public class BenchmarkNewLayoutGumps
     public void DynamicLayoutGump()
     {
         NewDynamicLayoutPetResurrectGump gump = new(_petName);
-        var writer = new SpanWriter(0x10000);
+        var writer = new SpanWriter(_packetBuffer);
         gump.CreatePacket(ref writer);
         writer.Dispose();
     }
@@ -50,7 +52,7 @@ public class BenchmarkNewLayoutGumps
     public void StaticLayoutDynamicStringsGump()
     {
         NewPetResurrectGump gump = new(_petName);
-        var writer = new SpanWriter(0x10000);
+        var writer = new SpanWriter(_packetBuffer);
         gump.CreatePacket(ref writer);
         writer.Dispose();
     }
@@ -60,7 +62,7 @@ public class BenchmarkNewLayoutGumps
     public void StaticLayoutGump()
     {
         NewPetStaticResurrectGump gump = new();
-        var writer = new SpanWriter(0x10000);
+        var writer = new SpanWriter(_packetBuffer);
         gump.CreatePacket(ref writer);
         writer.Dispose();
     }
