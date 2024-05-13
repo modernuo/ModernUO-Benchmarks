@@ -25,6 +25,7 @@ public static class Libdeflate
         Decompressor = NativeMethods.libdeflate_alloc_decompressor();
 
         AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+        return;
 
         static void CurrentDomain_ProcessExit(object? sender, EventArgs e)
         {
@@ -45,7 +46,7 @@ public static class Libdeflate
 
     public static ZlibError Pack(Span<byte> dest, ref int destLength, ReadOnlySpan<byte> source, int sourceLength, ZlibQuality quality)
     {
-        nuint result = NativeMethods.libdeflate_zlib_compress(Compressor, in MemoryMarshal.GetReference(source), (nuint)sourceLength,
+        var result = NativeMethods.libdeflate_zlib_compress(Compressor, in MemoryMarshal.GetReference(source), (nuint)sourceLength,
             ref MemoryMarshal.GetReference(dest), (nuint)destLength);
 
         if (result == 0)
@@ -59,8 +60,8 @@ public static class Libdeflate
 
     public static ZlibError Unpack(Span<byte> dest, ref int destLength, ReadOnlySpan<byte> source, int sourceLength)
     {
-        LibdeflateResult result = NativeMethods.libdeflate_zlib_decompress(Decompressor, in MemoryMarshal.GetReference(source),
-            (nuint)sourceLength, ref MemoryMarshal.GetReference(dest), (nuint)destLength, out nuint bytesWritten);
+        var result = NativeMethods.libdeflate_zlib_decompress(Decompressor, in MemoryMarshal.GetReference(source),
+            (nuint)sourceLength, ref MemoryMarshal.GetReference(dest), (nuint)destLength, out var bytesWritten);
 
         if (result != LibdeflateResult.Success)
         {

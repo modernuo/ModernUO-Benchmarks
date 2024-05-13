@@ -1,3 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
+using Benchmarks;
 
-var benchmark = BenchmarkRunner.Run<BenchmarkLibdeflate>();
+var benchmark = BenchmarkRunner.Run<BenchmarkGumpLibDeflate>();
