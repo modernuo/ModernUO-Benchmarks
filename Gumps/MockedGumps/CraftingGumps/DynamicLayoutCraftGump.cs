@@ -3,7 +3,7 @@ using Server.Gumps;
 
 namespace Server.Engines.Craft.Tests;
 
-public class DynamicLayoutCraftGump : DynamicLayoutGump
+public class DynamicLayoutCraftGump : DynamicGump
 {
     public enum CraftPage
     {

@@ -1,9 +1,8 @@
 using Server.Gumps;
-using Server.Gumps.Static;
 
 namespace Gumps.MockedGumps;
 
-public sealed class NewPetResurrectGump : StaticLayoutGump<NewPetResurrectGump>
+public sealed class NewPetResurrectGump : StaticGump<NewPetResurrectGump>
 {
     private readonly string _petName;
 

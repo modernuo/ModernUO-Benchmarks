@@ -1,9 +1,8 @@
 using Server.Gumps;
-using Server.Gumps.Static;
 
 namespace Gumps.MockedGumps;
 
-public sealed class NewPetStaticResurrectGump : StaticLayoutGump<NewPetStaticResurrectGump>
+public sealed class NewPetStaticResurrectGump : StaticGump<NewPetStaticResurrectGump>
 {
     public NewPetStaticResurrectGump() : base(50, 50)
     {

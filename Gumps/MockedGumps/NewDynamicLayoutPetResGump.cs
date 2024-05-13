@@ -2,7 +2,7 @@ using Server.Gumps;
 
 namespace Gumps.MockedGumps;
 
-public sealed class NewDynamicLayoutPetResurrectGump : DynamicLayoutGump
+public sealed class NewDynamicLayoutPetResurrectGump : DynamicGump
 {
     private readonly string _petName;
 
