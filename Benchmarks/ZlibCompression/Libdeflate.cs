@@ -37,6 +37,7 @@ public static class LibDeflate
     public static int MaxPackSize(int inputLength) =>
         (int)NativeMethods.libdeflate_zlib_compress_bound(Compressor, (nuint)inputLength);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ZlibError Pack(Span<byte> dest, ref int destLength, ReadOnlySpan<byte> source) =>
         Pack(dest, ref destLength, source, source.Length);
 

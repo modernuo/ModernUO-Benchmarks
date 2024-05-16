@@ -8,11 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
-    <ProjectReference Include="..\..\ModernUO\Projects\UOContent\UOContent.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="libdeflate.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
