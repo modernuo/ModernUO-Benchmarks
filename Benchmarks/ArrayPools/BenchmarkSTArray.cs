@@ -7,7 +7,7 @@ using Server.Buffers;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkSTArray
 {
     private static long[][] arrays = new long[16][];

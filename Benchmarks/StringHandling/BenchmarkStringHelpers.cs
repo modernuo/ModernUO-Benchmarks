@@ -10,7 +10,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks.BenchmarkUtilities;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkStringHelpers
 {
     // private readonly string[] names =

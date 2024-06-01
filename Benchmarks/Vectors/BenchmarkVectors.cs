@@ -8,7 +8,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkVectors
 {
     private static readonly byte[] PrimeArray = {

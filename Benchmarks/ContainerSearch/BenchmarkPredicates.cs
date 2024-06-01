@@ -5,8 +5,8 @@ using Server.Items;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkPredicates
 {
     private TestContainer _container1;

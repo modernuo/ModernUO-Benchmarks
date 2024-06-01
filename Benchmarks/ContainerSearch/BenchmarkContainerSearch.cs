@@ -5,7 +5,7 @@ using Server.Items;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkContainerSearch
 {
     private TestContainer _container1;

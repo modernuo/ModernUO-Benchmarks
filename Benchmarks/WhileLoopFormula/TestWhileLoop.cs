@@ -1,14 +1,16 @@
+using System;
+using System.Threading;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
 namespace Server.Tests;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class TestWhileLoop
 {
     private CancellationToken _token;
-    
+
     [GlobalSetup]
     public void Setup() => _token = new();
 
@@ -28,7 +30,7 @@ public class TestWhileLoop
             }
         }
     }
-    
+
     [Benchmark]
     public void TestTryCatchWhile()
     {

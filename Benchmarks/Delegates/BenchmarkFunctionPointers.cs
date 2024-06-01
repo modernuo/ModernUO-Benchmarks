@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace Benchmarks.Delegates;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 20, iterationCount: 20)]
+[SimpleJob(RuntimeMoniker.Net90, warmupCount: 20, iterationCount: 20)]
 public unsafe class BenchmarkFunctionPointers
 {
     private static Func<int, int, int> _del;

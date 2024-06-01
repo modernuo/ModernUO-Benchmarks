@@ -11,7 +11,7 @@ using Standart.Hash.xxHash;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkHashTypes
 {
     private List<Type> _types;
