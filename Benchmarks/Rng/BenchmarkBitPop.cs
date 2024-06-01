@@ -8,7 +8,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks.Benchmarks.Rng;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkBitPop
 {
     [Params(1, 10, 50, 200, 1000, 10_000)]

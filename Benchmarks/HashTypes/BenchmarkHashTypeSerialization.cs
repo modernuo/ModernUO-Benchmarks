@@ -8,7 +8,7 @@ using Server;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class BenchmarkHashTypeSerialization
 {
     private byte[] _bytes;
