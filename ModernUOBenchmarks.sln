@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringHandling", "Benchmark
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayPools", "Benchmarks\ArrayPools\ArrayPools.csproj", "{A086E531-D418-4B9E-A9D8-08E5D544822C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderedHashSet", "Benchmarks\OrderedHashSet\OrderedHashSet.csproj", "{A642E134-B3FF-491B-8C6A-2398CF1FF712}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UOMap", "Benchmarks\UOMap\UOMap.csproj", "{C7C47166-3159-4C13-98C9-45694011FC79}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalizationInterpolation", "Benchmarks\LocalizationInterpolation\LocalizationInterpolation.csproj", "{0E6AD1FE-A18A-4BD5-8748-D3BD3F439A43}"
@@ -44,6 +42,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "ModernUO\Projects\Logger\Logger.csproj", "{08CC7D9B-E218-45BC-BFC1-18A73D0B6553}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClosedFormulas", "Benchmarks\ClosedFormulas\ClosedFormulas.csproj", "{ABEB5C59-4102-4318-B64E-DF19E13A6C82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitArray", "Benchmarks\BitArray\BitArray.csproj", "{50148ABD-2501-42FD-87C4-D139D46ECC5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortedSetVPriorityQueue", "Benchmarks\SortedSetVPriorityQueue\SortedSetVPriorityQueue.csproj", "{E5DB24F4-0854-4E54-8FFA-25238D01FE96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,14 +119,6 @@ Global
 		{A086E531-D418-4B9E-A9D8-08E5D544822C}.Release|Any CPU.Build.0 = Release|x64
 		{A086E531-D418-4B9E-A9D8-08E5D544822C}.Release|x64.ActiveCfg = Release|x64
 		{A086E531-D418-4B9E-A9D8-08E5D544822C}.Release|x64.Build.0 = Release|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Debug|Any CPU.Build.0 = Debug|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Debug|x64.ActiveCfg = Debug|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Debug|x64.Build.0 = Debug|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Release|Any CPU.ActiveCfg = Release|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Release|Any CPU.Build.0 = Release|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Release|x64.ActiveCfg = Release|x64
-		{A642E134-B3FF-491B-8C6A-2398CF1FF712}.Release|x64.Build.0 = Release|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Debug|Any CPU.Build.0 = Debug|x64
 		{C7C47166-3159-4C13-98C9-45694011FC79}.Debug|x64.ActiveCfg = Debug|x64
@@ -221,6 +215,22 @@ Global
 		{ABEB5C59-4102-4318-B64E-DF19E13A6C82}.Release|Any CPU.Build.0 = Release|x64
 		{ABEB5C59-4102-4318-B64E-DF19E13A6C82}.Release|x64.ActiveCfg = Release|x64
 		{ABEB5C59-4102-4318-B64E-DF19E13A6C82}.Release|x64.Build.0 = Release|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Debug|Any CPU.Build.0 = Debug|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Debug|x64.ActiveCfg = Debug|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Debug|x64.Build.0 = Debug|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Release|Any CPU.ActiveCfg = Release|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Release|Any CPU.Build.0 = Release|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Release|x64.ActiveCfg = Release|x64
+		{50148ABD-2501-42FD-87C4-D139D46ECC5F}.Release|x64.Build.0 = Release|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Debug|Any CPU.Build.0 = Debug|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Debug|x64.ActiveCfg = Debug|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Debug|x64.Build.0 = Debug|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Release|Any CPU.ActiveCfg = Release|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Release|Any CPU.Build.0 = Release|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Release|x64.ActiveCfg = Release|x64
+		{E5DB24F4-0854-4E54-8FFA-25238D01FE96}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

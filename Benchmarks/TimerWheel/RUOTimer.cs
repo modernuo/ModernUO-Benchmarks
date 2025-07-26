@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Server.Diagnostics;
 
 namespace Server
 {
@@ -111,21 +110,6 @@ namespace Server
                     Stop();
                 }
             }
-        }
-
-        public TimerProfile GetProfile()
-        {
-            if ( !Core.Profiling ) {
-                return null;
-            }
-
-            string name = ToString();
-
-            if ( name == null ) {
-                name = "null";
-            }
-
-            return TimerProfile.Acquire( name );
         }
 
         public class TimerThread
@@ -238,11 +222,11 @@ namespace Server
             private static void ProcessChanged()
             {
                 lock (m_Changed) {
-                    long curTicks = m_TickCount;
+                    var curTicks = m_TickCount;
 
-                    foreach (TimerChangeEntry tce in m_Changed.Values) {
-                        RUOTimer ruoTimer = tce.MRuoTimer;
-                        int newIndex = tce.m_NewIndex;
+                    foreach (var tce in m_Changed.Values) {
+                        var ruoTimer = tce.MRuoTimer;
+                        var newIndex = tce.m_NewIndex;
 
                         if (ruoTimer.m_List != null)
                         {
@@ -303,7 +287,7 @@ namespace Server
 
                         for ( j = 0; j < m_Timers[i].Count; j++)
                         {
-                            RUOTimer t = m_Timers[i][j];
+                            var t = m_Timers[i][j];
 
                             if ( !t.m_Queued && now > t.m_Next )
                             {
@@ -353,24 +337,15 @@ namespace Server
             {
                 m_QueueCountAtSlice = m_Queue.Count;
 
-                int index = 0;
+                var index = 0;
 
                 while ( index < m_BreakCount && m_Queue.Count != 0 )
                 {
-                    RUOTimer t = m_Queue.Dequeue();
-                    TimerProfile prof = t.GetProfile();
-
-                    if ( prof != null ) {
-                        prof.Start();
-                    }
+                    var t = m_Queue.Dequeue();
 
                     t.OnTick();
                     t.m_Queued = false;
                     ++index;
-
-                    if ( prof != null ) {
-                        prof.Finish();
-                    }
                 }
             }
         }
@@ -381,20 +356,6 @@ namespace Server
 
         public RUOTimer( TimeSpan delay, TimeSpan interval ) : this( delay, interval, 0 )
         {
-        }
-
-        public virtual bool DefRegCreation
-        {
-            get{ return true; }
-        }
-
-        public void RegCreation()
-        {
-            TimerProfile prof = GetProfile();
-
-            if ( prof != null ) {
-                prof.Created++;
-            }
         }
 
         public RUOTimer( TimeSpan delay, TimeSpan interval, int count )
@@ -410,11 +371,6 @@ namespace Server
                     m_Priority = ComputePriority( interval );
                 }
                 m_PrioritySet = true;
-            }
-
-            if ( DefRegCreation )
-            {
-                RegCreation();
             }
         }
 
@@ -464,12 +420,6 @@ namespace Server
             {
                 m_Running = true;
                 TimerThread.AddTimer( this );
-
-                TimerProfile prof = GetProfile();
-
-                if ( prof != null ) {
-                    prof.Started++;
-                }
             }
         }
 
@@ -479,12 +429,6 @@ namespace Server
             {
                 m_Running = false;
                 TimerThread.RemoveTimer( this );
-
-                TimerProfile prof = GetProfile();
-
-                if ( prof != null ) {
-                    prof.Stopped++;
-                }
             }
         }
 

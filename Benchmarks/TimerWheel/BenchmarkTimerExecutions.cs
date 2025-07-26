@@ -16,10 +16,9 @@ public class BenchmarkTimerExecutions
     [GlobalSetup]
     public void Setup()
     {
-        Core.Profiling = false;
         Timer.Init(0);
 
-        RUOTimer.TimerThread ttObj = new RUOTimer.TimerThread();
+        var ttObj = new RUOTimer.TimerThread();
         _cancellationTokenSource = new CancellationTokenSource();
         var timerThread = new Thread(() => ttObj.TimerMain(_cancellationTokenSource.Token))
         {

@@ -174,7 +174,7 @@ public class BenchmarkMapMultiTilesSelectors
     }
 }
 
-public class BItem(Point3D location) : IPoint3D, IEntity
+public class BItem(Point3D location) : IEntity
 {
     public object Parent { get; set; } = null;
 
@@ -188,7 +188,7 @@ public class BItem(Point3D location) : IPoint3D, IEntity
 
     public Serial Serial => throw new NotImplementedException();
 
-    public Point3D Location { get; } = location;
+    public Point3D Location { get; set; } = location;
 
     public Map Map { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -208,8 +208,6 @@ public class BItem(Point3D location) : IPoint3D, IEntity
     int IPoint2D.Y => throw new NotImplementedException();
 
     DateTime ISerializable.Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    long ISerializable.SavePosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    BufferWriter ISerializable.SaveBuffer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     Serial ISerializable.Serial => throw new NotImplementedException();
 
@@ -275,6 +273,10 @@ public class BItem(Point3D location) : IPoint3D, IEntity
         throw new NotImplementedException();
     }
 
+    public byte SerializedThread { get; set; }
+    public int SerializedPosition { get; set; }
+    public int SerializedLength { get; set; }
+
     public void Serialize(IGenericWriter writer)
     {
         throw new NotImplementedException();
@@ -286,11 +288,6 @@ public class BItem(Point3D location) : IPoint3D, IEntity
     }
 
     void ISerializable.Deserialize(IGenericReader reader)
-    {
-        throw new NotImplementedException();
-    }
-
-    void ISerializable.Serialize(IGenericWriter writer)
     {
         throw new NotImplementedException();
     }
