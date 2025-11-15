@@ -145,7 +145,7 @@ public class FastAStar_PQueue
 
                 while (parent != -1)
                 {
-                    path[pathCount++] = PathAlgorithm.GetDirection(
+                    path[pathCount++] = GetDirection(
                         parent % AreaSize,
                         parent / AreaSize % AreaSize,
                         newNode % AreaSize,
@@ -175,6 +175,33 @@ public class FastAStar_PQueue
         _openQueue.Clear();
         return null;
     }
+
+    public static Direction GetDirection(int xSource, int ySource, int xDest, int yDest)
+    {
+        var x = xDest + 1 - xSource;
+        var y = yDest + 1 - ySource;
+        var v = y * 3 + x;
+
+        if (v is < 0 or >= 9)
+        {
+            return Direction.North;
+        }
+
+        return m_CalcDirections[v];
+    }
+
+    private static readonly Direction[] m_CalcDirections =
+    {
+        Direction.Up,
+        Direction.North,
+        Direction.Right,
+        Direction.West,
+        Direction.North,
+        Direction.East,
+        Direction.Left,
+        Direction.South,
+        Direction.Down
+    };
 
     private static int GetIndex(int x, int y, int z)
     {
