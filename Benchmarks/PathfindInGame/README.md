@@ -4,6 +4,16 @@ In-game pathfinding benchmark for ModernUO. Boots the full UOContent fixture (re
 
 This benchmark differs from the sibling `NPCPathing/` benchmark, which measures A\* node management cost in isolation against a synthetic always-walkable grid. `PathfindInGame` exercises the per-successor `MovementImpl.Check` path that handles slope, static stack, multi tiles, items, mobiles, and z-collision — the actual production hot path.
 
+## Submodule prerequisite
+
+The `ModernUO/` submodule is pinned to a SHA on the personal branch `feat/ai-pathfinding-optimization` (e.g., `316024d6b`). This SHA is **not** on the public `https://github.com/modernuo/ModernUO.git` `main` branch yet. To clone and build this branch successfully, the ModernUO branch must be pushed to a fork reachable from the configured submodule URL — either:
+
+- Push `feat/ai-pathfinding-optimization` to a personal fork and update `.gitmodules` to point at the fork, OR
+- Push the branch directly to `modernuo/ModernUO.git` (requires write access), OR
+- Wait for the branch to merge upstream.
+
+Until then, this branch is local-only — `git submodule update --init` will fail with "remote ref does not exist" for anyone other than the original author.
+
 ## Running
 
 From the repo root:
@@ -46,6 +56,10 @@ The ModernUO repo (on branch `feat/ai-pathfinding-optimization`) ships a `Pathfi
 6. Copy or append the JSONL into `Benchmarks/PathfindInGame/Corpus/baseline.jsonl`.
 
 ## Baseline numbers (FastAStarAlgorithm)
+
+> **WARNING — these numbers are NOT a meaningful baseline.** The test fixture (`TestMapDefinitions`) registers map dimensions but does not load real `.mul` tile data. With no walkable tiles, `FastAStarAlgorithm.Find` exhausts its open queue near-immediately on every scenario and returns `null` without expanding any meaningful nodes. The ~86 ns and zero allocations below are the cost of the algorithm's empty-queue early-exit path, not actual A\* search.
+>
+> Treat this section as a sanity check that the harness boots and runs end-to-end. **Phase 2 cannot use these numbers as a before/after comparison** — capture a real corpus first using the recorder workflow above (or expand `BenchmarkFixture` to load real tile data), then re-run.
 
 Captured on:
 
