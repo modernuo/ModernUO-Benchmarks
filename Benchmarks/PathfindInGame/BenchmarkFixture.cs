@@ -2,6 +2,7 @@ using System.Reflection;
 using Server;
 using Server.Items;
 using Server.Misc;
+using Server.Mobiles;
 using Server.Tests.Maps;
 
 namespace PathfindInGame;
@@ -24,6 +25,8 @@ public static class BenchmarkFixture
         ServerConfiguration.Load(true);
         ServerConfiguration.AssemblyDirectories.Add(Core.BaseDirectory);
         AssemblyHandler.LoadAssemblies(["Server.dll", "UOContent.dll"]);
+
+        NPCSpeeds.Configure();
 
         SkillsInfo.Configure();
         Server.Network.NetState.Configure();
