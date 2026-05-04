@@ -9,7 +9,7 @@ using Server.Text;
 namespace Benchmarks.BenchmarkUtilities;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkTextEncoding
 {
     public static readonly Encoding Unicode = TextEncoding.Unicode;

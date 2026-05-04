@@ -5,19 +5,18 @@ using System.Runtime.CompilerServices;
 
 namespace Benchmarks.Delegates;
 
-[MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90, warmupCount: 20, iterationCount: 20)]
+[SimpleJob(RuntimeMoniker.Net10_0, warmupCount: 40, iterationCount: 40)]
 public unsafe class BenchmarkFunctionPointers
 {
     private static Func<int, int, int> _del;
-    private static delegate* managed<int, int, int> _pointer;
+    private static delegate*<int, int, int> _pointer;
     private int _firstNumber;
     private int _secondNumber;
 
     [GlobalSetup]
     public void Setup()
     {
-        _del = (a, b) => a + b;
+        _del = [MethodImpl(MethodImplOptions.NoInlining)](a, b) => a + b;
         _pointer = &Sum;
 
         _firstNumber = 100;
@@ -34,5 +33,5 @@ public unsafe class BenchmarkFunctionPointers
     public int PointerExecute() => _pointer(_firstNumber, _secondNumber);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public static int Sum(int a, int b) => a + b;
+    private static int Sum(int a, int b) => a + b;
 }

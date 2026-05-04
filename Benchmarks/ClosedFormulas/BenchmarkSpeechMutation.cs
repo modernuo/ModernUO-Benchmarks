@@ -7,7 +7,7 @@ using Server.Text;
 namespace ClosedFormulas;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkSpeechMutation
 {
     private static readonly string Sentence = "The quick brown fox jumps over the lazy dog";

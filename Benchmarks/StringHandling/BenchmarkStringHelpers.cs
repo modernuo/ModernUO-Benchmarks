@@ -1,7 +1,5 @@
 using System;
-using System.Buffers.Binary;
 using System.Buffers.Text;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using BenchmarkDotNet.Attributes;
@@ -10,7 +8,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks.BenchmarkUtilities;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkStringHelpers
 {
     // private readonly string[] names =
@@ -116,7 +114,7 @@ public class BenchmarkStringHelpers
 
         return totalCopied;
     }
-    
+
     [Benchmark]
     public int BenchmarkEncodingUTF16LE()
     {
@@ -125,7 +123,7 @@ public class BenchmarkStringHelpers
 
         return Encoding.Unicode.GetBytes(str, buffer);
     }
-    
+
     [Benchmark]
     public int BenchmarkCastUTF16LE()
     {
@@ -146,7 +144,7 @@ public class BenchmarkStringHelpers
         var s = partsu16[0];
         s.CopyTo(span);
         var totalCopied = s.Length;
-        
+
         totalCopied += Encoding.BigEndianUnicode.GetBytes(name, span[totalCopied..]);
         (s = partsu16[1]).CopyTo(span[totalCopied..]);
         totalCopied += s.Length;
@@ -156,25 +154,25 @@ public class BenchmarkStringHelpers
         totalCopied += chrsWritten * 2;
         (s = partsu16[2]).CopyTo(span[totalCopied..]);
         totalCopied += s.Length;
-        
+
         chrs = MemoryMarshal.Cast<byte, char>(span[totalCopied..]);
         clients.TryFormat(chrs, out chrsWritten);
         totalCopied += chrsWritten * 2;
         (s = partsu16[3]).CopyTo(span[totalCopied..]);
         totalCopied += s.Length;
-        
+
         chrs = MemoryMarshal.Cast<byte, char>(span[totalCopied..]);
         items.TryFormat(chrs, out chrsWritten);
         totalCopied += chrsWritten * 2;
         (s = partsu16[4]).CopyTo(span[totalCopied..]);
         totalCopied += s.Length;
-        
+
         chrs = MemoryMarshal.Cast<byte, char>(span[totalCopied..]);
         mobiles.TryFormat(chrs, out chrsWritten);
         totalCopied += chrsWritten * 2;
         (s = partsu16[5]).CopyTo(span[totalCopied..]);
         totalCopied += s.Length;
-        
+
         chrs = MemoryMarshal.Cast<byte, char>(span[totalCopied..]);
         mem.TryFormat(chrs, out chrsWritten);
         totalCopied += chrsWritten * 2;

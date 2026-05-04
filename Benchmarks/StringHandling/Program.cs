@@ -1,4 +1,7 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System.Text;
+using BenchmarkDotNet.Running;
 using Benchmarks.BenchmarkUtilities;
 
-var stringHelpers = BenchmarkRunner.Run<BenchmarkTextEncoding>();
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+BenchmarkRunner.Run<BenchmarkStringHelpers>();

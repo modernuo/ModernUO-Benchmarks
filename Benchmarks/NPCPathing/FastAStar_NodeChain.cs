@@ -6,6 +6,15 @@ namespace Server.PathAlgorithms.FastAStar;
 
 public class FastAStar_NodeChain
 {
+    public struct PathNode
+    {
+        public int cost, total;
+        public int parent;
+        public int z;
+        public int prev;
+        public int next;
+    }
+
     private const int MaxDepth = 300;
     private const int AreaSize = 38;
 

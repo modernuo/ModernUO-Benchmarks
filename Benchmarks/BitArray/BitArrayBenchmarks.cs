@@ -6,7 +6,7 @@ using BenchmarkDotNet.Jobs;
 namespace BitArrayBenchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BitArrayDeserializeBenchmarks
 {
     private byte[] _packedBits;

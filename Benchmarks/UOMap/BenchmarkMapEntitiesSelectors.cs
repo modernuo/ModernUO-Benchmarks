@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Benchmarks.EntitiesSelectors;
 
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 [MemoryDiagnoser]
 public class BenchmarkMapEntitiesSelectors
 {

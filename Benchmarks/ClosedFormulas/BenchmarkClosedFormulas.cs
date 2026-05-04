@@ -4,7 +4,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace ClosedFormulas;
 
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkClosedFormulas
 {
     private static int _count = new Random().Next(10, 12);

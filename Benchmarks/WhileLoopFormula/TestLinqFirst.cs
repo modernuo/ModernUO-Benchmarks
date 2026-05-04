@@ -13,7 +13,7 @@ public class Item
 }
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class FirstVsForBenchmark
 {
     private List<Item> _items;

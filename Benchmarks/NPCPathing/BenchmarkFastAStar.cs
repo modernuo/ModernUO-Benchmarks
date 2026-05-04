@@ -5,7 +5,7 @@ using Server.PathAlgorithms.FastAStar;
 
 namespace NPCPathing;
 
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 [MemoryDiagnoser]
 public class BenchmarkFastAStar
 {

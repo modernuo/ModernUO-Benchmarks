@@ -5,7 +5,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace ClosedFormulas;
 
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkNameVerification
 {
     [Benchmark]

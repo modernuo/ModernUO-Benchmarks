@@ -7,7 +7,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkTopBy
 {
     private const int _total = 1000;

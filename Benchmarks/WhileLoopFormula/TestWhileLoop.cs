@@ -6,7 +6,7 @@ using BenchmarkDotNet.Jobs;
 namespace Server.Tests;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class TestWhileLoop
 {
     private CancellationToken _token;

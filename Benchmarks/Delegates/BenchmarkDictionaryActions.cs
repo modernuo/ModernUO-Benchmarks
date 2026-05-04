@@ -6,7 +6,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmarks.Delegates;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkDictionaryActions
 {
     private class BaseAI

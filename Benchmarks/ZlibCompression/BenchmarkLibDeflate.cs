@@ -5,7 +5,7 @@ using Server.Compression;
 
 namespace Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkGumpLibDeflate
 {
     private static readonly byte[] _packetBuffer = GC.AllocateUninitializedArray<byte>(0x10000);

@@ -5,7 +5,7 @@ using BenchmarkDotNet.Jobs;
 namespace Server.Tests;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class TestWhileInterlocked
 {
     public const uint EntityOffset = 0x40000000;

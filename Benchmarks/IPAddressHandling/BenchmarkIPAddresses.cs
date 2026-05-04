@@ -6,7 +6,7 @@ using Server;
 namespace Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkIPAddresses
 {
     private IPAddress _address1;

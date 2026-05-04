@@ -6,7 +6,7 @@ using Server.Buffers;
 namespace Benchmarks.BenchmarkUtilities;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class BenchmarkLocalizationInterpolation
 {
     private string _contents;
