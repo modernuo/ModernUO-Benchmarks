@@ -1,0 +1,4 @@
+{"Name":"trammel_open_plain","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1530,"GoalY":1660,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_dense_forest_yew","MapId":1,"StartX":585,"StartY":845,"StartZ":0,"GoalX":615,"GoalY":875,"GoalZ":0,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_corridor_brit_sewer","MapId":1,"StartX":1418,"StartY":1696,"StartZ":-32,"GoalX":1450,"GoalY":1720,"GoalZ":-32,"CanSwim":false,"CanFly":false,"CanOpenDoors":true,"CanMoveOverObstacles":false}
+{"Name":"trammel_multifloor_brit_inn","MapId":1,"StartX":1494,"StartY":1626,"StartZ":20,"GoalX":1502,"GoalY":1632,"GoalZ":20,"CanSwim":false,"CanFly":false,"CanOpenDoors":true,"CanMoveOverObstacles":false}
