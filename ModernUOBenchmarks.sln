@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMask256", "Benchmarks\Bi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringHandling", "Benchmarks\StringHandling\StringHandling.csproj", "{249506AF-F028-4148-B33A-63F570B96A0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticWalkabilityCache", "Benchmarks\StaticWalkabilityCache\StaticWalkabilityCache.csproj", "{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,6 +273,14 @@ Global
 		{249506AF-F028-4148-B33A-63F570B96A0C}.Release|Any CPU.Build.0 = Release|x64
 		{249506AF-F028-4148-B33A-63F570B96A0C}.Release|x64.ActiveCfg = Release|x64
 		{249506AF-F028-4148-B33A-63F570B96A0C}.Release|x64.Build.0 = Release|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Debug|Any CPU.Build.0 = Debug|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Debug|x64.ActiveCfg = Debug|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Debug|x64.Build.0 = Debug|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Release|Any CPU.ActiveCfg = Release|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Release|Any CPU.Build.0 = Release|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Release|x64.ActiveCfg = Release|x64
+		{E4E20093-5E8A-4FF6-A941-8E4C7B6F09D7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

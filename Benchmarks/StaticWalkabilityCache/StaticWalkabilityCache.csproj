@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>StaticWalkabilityCacheBench</RootNamespace>
+        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
+        <ProjectReference Include="..\..\ModernUO\Projects\UOContent\UOContent.csproj" />
+        <ProjectReference Include="..\..\ModernUO\Projects\Server.Tests\Server.Tests.csproj" />
+        <DataFiles Include="..\..\ModernUO\Distribution\Data\**" />
+    </ItemGroup>
+    <Target Name="CopyData" AfterTargets="AfterBuild">
+        <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data\%(RecursiveDir)" />
+    </Target>
+</Project>
