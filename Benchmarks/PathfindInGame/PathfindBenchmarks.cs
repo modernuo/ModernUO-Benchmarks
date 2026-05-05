@@ -6,7 +6,9 @@ using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
+using Server.Engines.Pathing.Cache;
 using Server.PathAlgorithms.FastAStar;
+using Server.Systems.FeatureFlags;
 
 namespace PathfindInGame;
 
@@ -14,6 +16,16 @@ namespace PathfindInGame;
 [SimpleJob(RuntimeMoniker.Net10_0)]
 public class PathfindBenchmarks
 {
+    public enum PathProvider
+    {
+        SlowPath,
+        CachedClean,
+        CachedShadow,
+    }
+
+    [ParamsAllValues]
+    public PathProvider Provider { get; set; }
+
     // BenchmarkDotNet calls ScenarioIndices() before [GlobalSetup] to build the
     // parameter matrix. Load the corpus once into a static field so both
     // ScenarioIndices and Setup share the same data without a null-reference.
@@ -48,6 +60,23 @@ public class PathfindBenchmarks
             stub.MoveToWorld(s.Start, s.ResolveMap());
             _stubMobiles.Add(stub);
         }
+    }
+
+    [IterationSetup]
+    public void IterationSetup()
+    {
+        // Fully-qualified — PathfindInGame namespace might collide if `using Server.Engines.Pathing.Cache`
+        // ever introduced a name clash. Defensive.
+        Server.Engines.Pathing.Cache.StaticWalkabilityCache.Instance.Clear();
+        PathfindingFeatureFlags.PathfindingCacheShadow = (Provider == PathProvider.CachedShadow);
+        PathfindingFeatureFlags.PathfindingCacheUseForMovement = (Provider == PathProvider.CachedClean);
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        PathfindingFeatureFlags.PathfindingCacheShadow = false;
+        PathfindingFeatureFlags.PathfindingCacheUseForMovement = false;
     }
 
     [Benchmark]
