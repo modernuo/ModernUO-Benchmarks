@@ -74,9 +74,7 @@ public class PathfindBenchmarks
         var isCold = Provider == PathProvider.CachedClean || Provider == PathProvider.CachedShadow;
         if (isCold)
         {
-            // Fully-qualified — PathfindInGame namespace might collide if `using Server.Engines.Pathing.Cache`
-            // ever introduced a name clash. Defensive.
-            Server.Engines.Pathing.Cache.StaticWalkabilityCache.Instance.Clear();
+            StaticWalkabilityCache.Instance.Clear();
         }
 
         var shadowOn = Provider == PathProvider.CachedShadow || Provider == PathProvider.CachedShadow_Warm;
