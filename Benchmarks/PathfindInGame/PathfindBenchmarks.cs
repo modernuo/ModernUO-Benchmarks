@@ -7,8 +7,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
-using Server.PathAlgorithms.BitmapAStar;
-using Server.Systems.FeatureFlags;
+using Server.PathAlgorithms;
 
 namespace PathfindInGame;
 
@@ -17,24 +16,28 @@ namespace PathfindInGame;
 public class PathfindBenchmarks
 {
     /// <summary>
-    /// Plan 2F unified pathfinding under BitmapAStarAlgorithm (FastAStar deleted).
-    /// The cache feature flags now only affect MovementImpl's per-cell integration
-    /// (i.e., the slow-path fallback path used for capability creatures and for
-    /// fallthrough cells). Default-walker pathfinds bypass MovementImpl entirely
-    /// via BitmapAStar's batched cache lookup.
+    /// Three production-relevant variants. Earlier matrices (Warm, PrecomputedCold,
+    /// PrecomputedWarm without Tier 4) confirmed redundant once Tier 4 became the
+    /// shipping shape — see the BDN history in the design docs for the data.
     ///
     /// Variants:
-    ///   Cold      — cache cleared every iteration; measures full cold-build cost
-    ///   Warm      — cache stays warm across iterations; measures steady-state
-    ///   Shadow    — cache + slow-path divergence recording (overhead only)
-    ///   ShadowWarm — Shadow with warm cache
+    ///   Cold                  — no file, cache cleared each iteration. Reference
+    ///                           baseline showing the runtime-baker-only cost an
+    ///                           operator gets if they don't bake .swb files at all.
+    ///   PrecomputedColdTier4  — file loaded in [GlobalSetup] (with Tier 4 strata in v5),
+    ///                           Tier 4 memo populated per scenario, cache cleared each
+    ///                           iteration. Measures "first pathfind after boot" — chunks
+    ///                           reload from file each iter, strata survive in the memo.
+    ///   PrecomputedWarmTier4  — file loaded + Tier 4 memo populated, cache kept warm.
+    ///                           Production steady-state shape: file-loaded chunks
+    ///                           resident, multi-Z and source-Z fallthroughs absorbed
+    ///                           by Tier 4. Lowest mean per-call latency we ship.
     /// </summary>
     public enum PathProvider
     {
         Cold,
-        Warm,
-        Shadow,
-        ShadowWarm,
+        PrecomputedColdTier4,
+        PrecomputedWarmTier4,
     }
 
     [ParamsAllValues]
@@ -75,34 +78,122 @@ public class PathfindBenchmarks
             stub.MoveToWorld(s.Start, s.ResolveMap());
             _stubMobiles[i] = stub;
         }
+
+        // Always start with no precomputed files registered. Each variant decides whether
+        // to load them and whether to populate the Tier 4 memo.
+        StaticWalkabilityCache.Instance.UnloadAllPrecomputed();
+        StaticWalkabilityCache.Instance.ClearTier4Memo();
+
+        if (Provider == PathProvider.PrecomputedColdTier4
+            || Provider == PathProvider.PrecomputedWarmTier4)
+        {
+            LoadPrecomputedFilesForCorpus();
+            BuildTier4ForCorpus();
+        }
+    }
+
+    /// <summary>
+    /// Tier 4 PoC: pre-resolve every fallthrough cell in each scenario's exploration
+    /// footprint over a Z range that covers stair / partial-step destinations. Sweeps
+    /// sourceZ ∈ [-8, 32] which is the empirical range A* expands into for the bench
+    /// corpus. A production Tier 4 would discover the precise Z-strata at bake time
+    /// rather than spraying the range, but for the bench we want the ceiling number.
+    /// </summary>
+    private void BuildTier4ForCorpus()
+    {
+        var cache = StaticWalkabilityCache.Instance;
+        for (var i = 0; i < _staticScenarios.Length; i++)
+        {
+            var s = _staticScenarios[i];
+            var stub = _stubMobiles[i];
+            var map = s.ResolveMap();
+            var midX = (s.StartX + s.GoalX) / 2;
+            var midY = (s.StartY + s.GoalY) / 2;
+            for (sbyte sz = -8; sz <= 32; sz++)
+            {
+                cache.BuildTier4ForRegion(stub, map, midX, midY, range: 24, sourceZ: sz);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Plan 2E.1.B — register the pre-baked <c>&lt;mapId&gt;.swb</c> files for every
+    /// map referenced by the corpus. Path resolves via the
+    /// <c>MODERNUO_PATHFINDING_DATA_DIR</c> environment variable; falls back to
+    /// walking upward from <see cref="AppContext.BaseDirectory"/> looking for a
+    /// <c>ModernUO/Distribution/Data/Pathfinding/</c> directory. (BenchmarkDotNet
+    /// runs the harness from a generated subdir under bin/Release, so a fixed
+    /// <c>../</c> count would be brittle.)
+    /// </summary>
+    private static void LoadPrecomputedFilesForCorpus()
+    {
+        var dir = ResolvePrecomputedDir();
+
+        if (dir is null || !Directory.Exists(dir))
+        {
+            throw new DirectoryNotFoundException(
+                $"Precomputed pathfinding cache directory not found (searched upward from " +
+                $"'{AppContext.BaseDirectory}'). " +
+                "Set MODERNUO_PATHFINDING_DATA_DIR or run the bake tool to populate " +
+                "<Distribution>/Data/Pathfinding/."
+            );
+        }
+
+        var loaded = new HashSet<int>();
+        foreach (var s in _staticScenarios)
+        {
+            if (!loaded.Add(s.MapId))
+            {
+                continue;
+            }
+
+            var path = Path.Combine(dir, $"{s.MapId}.swb");
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(
+                    $"Precomputed cache file missing for map {s.MapId} (scenario '{s.Name}'): {path}"
+                );
+            }
+
+            StaticWalkabilityCache.Instance.LoadPrecomputed(s.MapId, path);
+        }
+    }
+
+    private static string? ResolvePrecomputedDir()
+    {
+        var fromEnv = Environment.GetEnvironmentVariable("MODERNUO_PATHFINDING_DATA_DIR");
+        if (!string.IsNullOrEmpty(fromEnv))
+        {
+            return fromEnv;
+        }
+
+        // Walk up from AppContext.BaseDirectory looking for ModernUO/Distribution/Data/Pathfinding/.
+        // Bound the walk to avoid infinite loop on a malformed path.
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var i = 0; i < 12 && current is not null; i++)
+        {
+            var candidate = Path.Combine(current.FullName, "ModernUO", "Distribution", "Data", "Pathfinding");
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+            current = current.Parent;
+        }
+        return null;
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        // Cold variants clear every iteration to measure cold-build cost.
-        // Warm variants skip the clear so BDN's natural warmup primes the cache.
-        var isCold = Provider == PathProvider.Cold || Provider == PathProvider.Shadow;
-        if (isCold)
+        // Cold variants (Cold, PrecomputedColdTier4) clear chunks every iteration to
+        // measure first-pathfind cost: in Cold the runtime baker rebuilds chunks; in
+        // PrecomputedColdTier4 the chunk-miss resolves from the registered .swb file
+        // and the Tier 4 memo persists (it's not in _chunks). PrecomputedWarmTier4
+        // keeps everything resident — production steady-state shape.
+        if (Provider == PathProvider.Cold || Provider == PathProvider.PrecomputedColdTier4)
         {
             StaticWalkabilityCache.Instance.Clear();
         }
-
-        var shadowOn = Provider == PathProvider.Shadow || Provider == PathProvider.ShadowWarm;
-
-        // Note: PathfindingCacheUseForMovement is mostly irrelevant for default-walker
-        // pathfinds because BitmapAStar uses the cache directly. It still affects the
-        // MovementImpl per-cell slow-path used for capability-creature fallback. Set it
-        // ON for non-shadow variants (matches production-shape).
-        PathfindingFeatureFlags.PathfindingCacheShadow = shadowOn;
-        PathfindingFeatureFlags.PathfindingCacheUseForMovement = !shadowOn;
-    }
-
-    [IterationCleanup]
-    public void IterationCleanup()
-    {
-        PathfindingFeatureFlags.PathfindingCacheShadow = false;
-        PathfindingFeatureFlags.PathfindingCacheUseForMovement = false;
     }
 
     [Benchmark]

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Server;
+using Server.Engines.Pathing.Cache;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -54,7 +57,66 @@ public static class BenchmarkFixture
         // flag=None and FastAStar treats everything as walkable (meaningless 86ns paths).
         ForceLoadTileData();
 
+        EnsureWalkabilityCacheBaked();
+
         _initialized = true;
+    }
+
+    /// <summary>
+    /// Make sure each map referenced by the bench corpus has a fresh, valid
+    /// <c>&lt;mapId&gt;.swb</c> file before the harness starts measuring. Calls
+    /// <see cref="WalkabilityCacheBaker.BakeMap"/> in-process if the file is missing
+    /// or has a stale tile-data hash. Single source of truth — no standalone tool.
+    /// </summary>
+    private static void EnsureWalkabilityCacheBaked()
+    {
+        var dir = ResolveWalkabilityCacheDir();
+        Directory.CreateDirectory(dir);
+
+        var liveHash = PrecomputedCacheFile.ComputeLiveTileDataHash();
+        var mapsToBake = new HashSet<int> { 1 }; // bench corpus is currently Trammel-only.
+
+        foreach (var mapId in mapsToBake)
+        {
+            var path = Path.Combine(dir, $"{mapId}.swb");
+            if (FileMatchesLiveHash(path, liveHash))
+            {
+                continue;
+            }
+
+            Console.Error.WriteLine($"[BenchmarkFixture] Baking walkability cache for map {mapId} → {path}");
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            WalkabilityCacheBaker.BakeMap(mapId, path);
+            sw.Stop();
+            Console.Error.WriteLine($"[BenchmarkFixture] Bake complete in {sw.Elapsed.TotalSeconds:F2}s");
+        }
+    }
+
+    private static bool FileMatchesLiveHash(string path, ulong liveHash) =>
+        PrecomputedCacheFile.TryReadTileDataHash(path) is ulong h && h == liveHash;
+
+    private static string ResolveWalkabilityCacheDir()
+    {
+        var fromEnv = Environment.GetEnvironmentVariable("MODERNUO_PATHFINDING_DATA_DIR");
+        if (!string.IsNullOrEmpty(fromEnv))
+        {
+            return fromEnv;
+        }
+
+        // Walk up from the bench bin dir to find <repo>/Distribution/Data/Pathfinding/.
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var i = 0; i < 12 && current is not null; i++)
+        {
+            var candidate = Path.Combine(current.FullName, "ModernUO", "Distribution", "Data", "Pathfinding");
+            if (Directory.Exists(Path.GetDirectoryName(candidate)!))
+            {
+                return candidate;
+            }
+            current = current.Parent;
+        }
+
+        // Fallback: bake into the bench bin dir if the repo layout isn't recognised.
+        return Path.Combine(AppContext.BaseDirectory, "Pathfinding");
     }
 
     private static void ForceLoadTileData()
