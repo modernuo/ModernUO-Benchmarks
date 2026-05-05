@@ -7,9 +7,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
-using Server.PathAlgorithms;
 using Server.PathAlgorithms.BitmapAStar;
-using Server.PathAlgorithms.FastAStar;
 using Server.Systems.FeatureFlags;
 
 namespace PathfindInGame;
@@ -18,15 +16,25 @@ namespace PathfindInGame;
 [SimpleJob(RuntimeMoniker.Net10_0)]
 public class PathfindBenchmarks
 {
+    /// <summary>
+    /// Plan 2F unified pathfinding under BitmapAStarAlgorithm (FastAStar deleted).
+    /// The cache feature flags now only affect MovementImpl's per-cell integration
+    /// (i.e., the slow-path fallback path used for capability creatures and for
+    /// fallthrough cells). Default-walker pathfinds bypass MovementImpl entirely
+    /// via BitmapAStar's batched cache lookup.
+    ///
+    /// Variants:
+    ///   Cold      — cache cleared every iteration; measures full cold-build cost
+    ///   Warm      — cache stays warm across iterations; measures steady-state
+    ///   Shadow    — cache + slow-path divergence recording (overhead only)
+    ///   ShadowWarm — Shadow with warm cache
+    /// </summary>
     public enum PathProvider
     {
-        SlowPath,
-        CachedClean,
-        CachedClean_Warm,
-        CachedShadow,
-        CachedShadow_Warm,
-        BitmapAStar,
-        BitmapAStar_Warm,
+        Cold,
+        Warm,
+        Shadow,
+        ShadowWarm,
     }
 
     [ParamsAllValues]
@@ -57,39 +65,37 @@ public class PathfindBenchmarks
         _stubMobiles = new StubCreature[_staticScenarios.Length];
         for (var i = 0; i < _staticScenarios.Length; i++)
         {
-          var s = _staticScenarios[i];
-          var stub = new StubCreature
-          {
-            CanSwim = s.CanSwim,
-            CantWalk = false
-          };
-          stub.SetMobilityFlags(s.CanOpenDoors, s.CanMoveOverObstacles);
-          stub.MoveToWorld(s.Start, s.ResolveMap());
-          _stubMobiles[i] = stub;
+            var s = _staticScenarios[i];
+            var stub = new StubCreature
+            {
+                CanSwim = s.CanSwim,
+                CantWalk = false
+            };
+            stub.SetMobilityFlags(s.CanOpenDoors, s.CanMoveOverObstacles);
+            stub.MoveToWorld(s.Start, s.ResolveMap());
+            _stubMobiles[i] = stub;
         }
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        // Cold-cache variants clear every iteration to measure cold-build cost.
-        // Warm-cache variants skip the clear so BDN's natural warmup primes the cache,
-        // and the measured iterations hit warm chunks.
-        var isCold = Provider == PathProvider.CachedClean
-                     || Provider == PathProvider.CachedShadow
-                     || Provider == PathProvider.BitmapAStar;
+        // Cold variants clear every iteration to measure cold-build cost.
+        // Warm variants skip the clear so BDN's natural warmup primes the cache.
+        var isCold = Provider == PathProvider.Cold || Provider == PathProvider.Shadow;
         if (isCold)
         {
             StaticWalkabilityCache.Instance.Clear();
         }
 
-        var shadowOn = Provider == PathProvider.CachedShadow || Provider == PathProvider.CachedShadow_Warm;
-        var useCacheOn = Provider == PathProvider.CachedClean || Provider == PathProvider.CachedClean_Warm;
-        var bitmapOn = Provider == PathProvider.BitmapAStar || Provider == PathProvider.BitmapAStar_Warm;
+        var shadowOn = Provider == PathProvider.Shadow || Provider == PathProvider.ShadowWarm;
 
+        // Note: PathfindingCacheUseForMovement is mostly irrelevant for default-walker
+        // pathfinds because BitmapAStar uses the cache directly. It still affects the
+        // MovementImpl per-cell slow-path used for capability-creature fallback. Set it
+        // ON for non-shadow variants (matches production-shape).
         PathfindingFeatureFlags.PathfindingCacheShadow = shadowOn;
-        PathfindingFeatureFlags.PathfindingCacheUseForMovement = useCacheOn;
-        PathfindingFeatureFlags.PathfindingUseBitmapAStar = bitmapOn;
+        PathfindingFeatureFlags.PathfindingCacheUseForMovement = !shadowOn;
     }
 
     [IterationCleanup]
@@ -97,23 +103,17 @@ public class PathfindBenchmarks
     {
         PathfindingFeatureFlags.PathfindingCacheShadow = false;
         PathfindingFeatureFlags.PathfindingCacheUseForMovement = false;
-        PathfindingFeatureFlags.PathfindingUseBitmapAStar = false;
     }
 
     [Benchmark]
     [ArgumentsSource(nameof(ScenarioIndices))]
     public Direction[]? FastAStar_Find(int scenarioIndex)
     {
+        // Method name kept as "FastAStar_Find" for benchmark-output continuity with
+        // pre-Plan-2F runs. Underlying algorithm is now BitmapAStarAlgorithm.
         var s = _staticScenarios[scenarioIndex];
         var stub = _stubMobiles[scenarioIndex];
-        // Mirror MovementPath's algorithm selection so BitmapAStar variants
-        // actually exercise BitmapAStarAlgorithm; non-bitmap variants (SlowPath,
-        // CachedClean*, CachedShadow*) continue to flow through FastAStar +
-        // MovementImpl, which honors the cache flags.
-        var alg = PathfindingFeatureFlags.PathfindingUseBitmapAStar
-            ? (PathAlgorithm)BitmapAStarAlgorithm.Instance
-            : FastAStarAlgorithm.Instance;
-        return alg.Find(stub, s.ResolveMap(), s.Start, s.Goal);
+        return BitmapAStarAlgorithm.Instance.Find(stub, s.ResolveMap(), s.Start, s.Goal);
     }
 
     public IEnumerable<int> ScenarioIndices()
