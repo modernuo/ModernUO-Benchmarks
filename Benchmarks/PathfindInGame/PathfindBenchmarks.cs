@@ -7,6 +7,8 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
+using Server.PathAlgorithms;
+using Server.PathAlgorithms.BitmapAStar;
 using Server.PathAlgorithms.FastAStar;
 using Server.Systems.FeatureFlags;
 
@@ -23,6 +25,8 @@ public class PathfindBenchmarks
         CachedClean_Warm,
         CachedShadow,
         CachedShadow_Warm,
+        BitmapAStar,
+        BitmapAStar_Warm,
     }
 
     [ParamsAllValues]
@@ -71,7 +75,9 @@ public class PathfindBenchmarks
         // Cold-cache variants clear every iteration to measure cold-build cost.
         // Warm-cache variants skip the clear so BDN's natural warmup primes the cache,
         // and the measured iterations hit warm chunks.
-        var isCold = Provider == PathProvider.CachedClean || Provider == PathProvider.CachedShadow;
+        var isCold = Provider == PathProvider.CachedClean
+                     || Provider == PathProvider.CachedShadow
+                     || Provider == PathProvider.BitmapAStar;
         if (isCold)
         {
             StaticWalkabilityCache.Instance.Clear();
@@ -79,9 +85,11 @@ public class PathfindBenchmarks
 
         var shadowOn = Provider == PathProvider.CachedShadow || Provider == PathProvider.CachedShadow_Warm;
         var useCacheOn = Provider == PathProvider.CachedClean || Provider == PathProvider.CachedClean_Warm;
+        var bitmapOn = Provider == PathProvider.BitmapAStar || Provider == PathProvider.BitmapAStar_Warm;
 
         PathfindingFeatureFlags.PathfindingCacheShadow = shadowOn;
         PathfindingFeatureFlags.PathfindingCacheUseForMovement = useCacheOn;
+        PathfindingFeatureFlags.PathfindingUseBitmapAStar = bitmapOn;
     }
 
     [IterationCleanup]
@@ -89,6 +97,7 @@ public class PathfindBenchmarks
     {
         PathfindingFeatureFlags.PathfindingCacheShadow = false;
         PathfindingFeatureFlags.PathfindingCacheUseForMovement = false;
+        PathfindingFeatureFlags.PathfindingUseBitmapAStar = false;
     }
 
     [Benchmark]
@@ -97,7 +106,14 @@ public class PathfindBenchmarks
     {
         var s = _staticScenarios[scenarioIndex];
         var stub = _stubMobiles[scenarioIndex];
-        return FastAStarAlgorithm.Instance.Find(stub, s.ResolveMap(), s.Start, s.Goal);
+        // Mirror MovementPath's algorithm selection so BitmapAStar variants
+        // actually exercise BitmapAStarAlgorithm; non-bitmap variants (SlowPath,
+        // CachedClean*, CachedShadow*) continue to flow through FastAStar +
+        // MovementImpl, which honors the cache flags.
+        var alg = PathfindingFeatureFlags.PathfindingUseBitmapAStar
+            ? (PathAlgorithm)BitmapAStarAlgorithm.Instance
+            : FastAStarAlgorithm.Instance;
+        return alg.Find(stub, s.ResolveMap(), s.Start, s.Goal);
     }
 
     public IEnumerable<int> ScenarioIndices()
