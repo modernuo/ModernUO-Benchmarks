@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using Server;
 using Server.Engines.Pathing.Cache;
-using Server.Mobiles;
 using Cache = Server.Engines.Pathing.Cache.StaticWalkabilityCache;
 
 namespace StaticWalkabilityCacheBench;

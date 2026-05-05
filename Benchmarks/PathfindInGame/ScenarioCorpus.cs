@@ -11,7 +11,7 @@ public static class ScenarioCorpus
         PropertyNameCaseInsensitive = true
     };
 
-    public static List<PathfindScenario> LoadJsonl(string path)
+    public static PathfindScenario[] LoadJsonl(string path)
     {
         var scenarios = new List<PathfindScenario>();
 
@@ -30,6 +30,6 @@ public static class ScenarioCorpus
             }
         }
 
-        return scenarios;
+        return scenarios.ToArray();
     }
 }
