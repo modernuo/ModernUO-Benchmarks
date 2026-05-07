@@ -4,3 +4,7 @@
 {"Name":"trammel_multifloor_brit_inn","MapId":1,"StartX":1494,"StartY":1626,"StartZ":20,"GoalX":1502,"GoalY":1632,"GoalZ":20,"CanSwim":false,"CanFly":false,"CanOpenDoors":true,"CanMoveOverObstacles":false}
 {"Name":"trammel_britain_causeway","MapId":1,"StartX":1478,"StartY":1647,"StartZ":0,"GoalX":1502,"GoalY":1647,"GoalZ":0,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_deep_sea_serpent_open_ocean","MapId":1,"StartX":2368,"StartY":2799,"StartZ":-5,"GoalX":2400,"GoalY":2799,"GoalZ":-5,"CanSwim":true,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_pet_follow_2tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1498,"GoalY":1629,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_combat_adjust_3tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1499,"GoalY":1631,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_npc_perception_5tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1501,"GoalY":1632,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_npc_patrol_8tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1504,"GoalY":1628,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
