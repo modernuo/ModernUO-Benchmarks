@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>PathfindInGame</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\ModernUO\Projects\Server\Server.csproj" />
+        <ProjectReference Include="..\..\ModernUO\Projects\UOContent\UOContent.csproj" />
+        <DataFiles Include="..\..\ModernUO\Distribution\Data\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Corpus\baseline.jsonl">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <Target Name="CopyData" AfterTargets="AfterBuild">
+        <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data\%(RecursiveDir)" />
+    </Target>
+</Project>

@@ -12,6 +12,8 @@
         <PredefinedCulturesOnly>false</PredefinedCulturesOnly>
         <InvariantGlobalization>true</InvariantGlobalization>
         <OutputType>Exe</OutputType>
+        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <DefineConstants>TRACE;DEBUG</DefineConstants>
