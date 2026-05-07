@@ -7,6 +7,7 @@ using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
 using Server.PathAlgorithms.BitmapAStar;
+using Server.PathAlgorithms.FastAStar;
 
 namespace PathfindInGame;
 
@@ -135,6 +136,24 @@ public class PathfindBenchmarks
         var s = _staticScenarios[scenarioIndex];
         var stub = _stubMobiles[scenarioIndex];
         return BitmapAStarAlgorithm.Instance.Find(stub, s.ResolveMap(), s.Start, s.Goal);
+    }
+
+    /// <summary>
+    /// Pre-cache baseline: the FastAStarAlgorithm that ModernUO shipped before the
+    /// step-cache rework (snapshot at e1e1a7c640). Pulled in directly so the bench can
+    /// produce apples-to-apples comparison numbers without checking out an old branch.
+    /// FastAStar is cache-agnostic, so the Provider param has no effect on its results
+    /// — every Provider variant produces ~the same number for this method. Filter to a
+    /// single Provider if you want a clean row per scenario, e.g.:
+    ///   --filter '*FastAStar_Find*Provider=Cold*'
+    /// </summary>
+    [Benchmark]
+    [ArgumentsSource(nameof(ScenarioIndices))]
+    public Direction[]? FastAStar_Find(int scenarioIndex)
+    {
+        var s = _staticScenarios[scenarioIndex];
+        var stub = _stubMobiles[scenarioIndex];
+        return FastAStarAlgorithm.Instance.Find(stub, s.ResolveMap(), s.Start, s.Goal);
     }
 
     public System.Collections.Generic.IEnumerable<int> ScenarioIndices()
