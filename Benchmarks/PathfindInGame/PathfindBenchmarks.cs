@@ -147,7 +147,7 @@ public class PathfindBenchmarks
     /// single Provider if you want a clean row per scenario, e.g.:
     ///   --filter '*FastAStar_Find*Provider=Cold*'
     /// </summary>
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     [ArgumentsSource(nameof(ScenarioIndices))]
     public Direction[]? FastAStar_Find(int scenarioIndex)
     {
