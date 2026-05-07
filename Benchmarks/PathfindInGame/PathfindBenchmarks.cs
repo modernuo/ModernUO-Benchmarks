@@ -15,14 +15,23 @@ namespace PathfindInGame;
 public class PathfindBenchmarks
 {
     /// <summary>
-    /// Three production-relevant variants:
+    /// Four production-relevant variants:
     ///
-    ///   Cold         — no .swb file open, cache cleared each iteration. Reference
-    ///                  baseline showing the runtime-baker-only cost an operator gets
-    ///                  if no .swb files have been baked.
+    ///   Cold         — no .swb file open, cache cleared each iteration. Pessimistic:
+    ///                  every iteration pays the full BuildChunk cost. Models a "first
+    ///                  pathfind ever in this region" event, not steady-state — a real
+    ///                  hobby admin without baked files only sees this for the FIRST
+    ///                  pathfind in each region per server lifetime.
+    ///   WarmNoFile   — no .swb file open, cache kept warm across iterations. The
+    ///                  realistic hobby-admin workload: no .swb files, but BDN warmup
+    ///                  populates the chunks once via the runtime baker; measurement
+    ///                  iterations all hit the warm cache. After warmup, this should
+    ///                  match LazyWarm — the .swb file's only job is to make the FIRST
+    ///                  pathfind cheaper, not the steady state.
     ///   LazyCold     — .swb files opened as lazy backing stores in [GlobalSetup],
     ///                  cache cleared each iteration. Measures "first pathfind through
-    ///                  a region after boot" — chunks reload from file, not from baker.
+    ///                  a region after boot" with a baked file present — chunks reload
+    ///                  from file, not from baker.
     ///   LazyWarm     — .swb files opened, cache kept warm across iterations. Production
     ///                  steady-state shape: file-loaded chunks resident, lowest mean
     ///                  per-call latency we ship.
@@ -30,6 +39,7 @@ public class PathfindBenchmarks
     public enum PathProvider
     {
         Cold,
+        WarmNoFile,
         LazyCold,
         LazyWarm,
     }
@@ -108,13 +118,12 @@ public class PathfindBenchmarks
     [IterationSetup]
     public void IterationSetup()
     {
-        // Cold variants clear chunks every iteration so we measure first-pathfind cost.
-        // In Cold the runtime baker rebuilds chunks; in LazyCold the chunk-miss resolves
-        // from the open .swb file. LazyWarm keeps everything resident — production
-        // steady-state shape.
+        // Cold/LazyCold clear residents so every iteration measures first-pathfind cost
+        // from baker / file respectively. WarmNoFile and LazyWarm keep the cache warm
+        // across iterations — measurement iterations land on cache hits after BDN's
+        // warmup populates the chunks.
         if (Provider is PathProvider.Cold or PathProvider.LazyCold)
         {
-            // Clear residents but keep the lazy readers open.
             StepCache.Instance.ClearResidentChunks();
         }
     }
