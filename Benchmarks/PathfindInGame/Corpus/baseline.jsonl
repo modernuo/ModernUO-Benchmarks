@@ -8,3 +8,4 @@
 {"Name":"trammel_combat_adjust_3tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1499,"GoalY":1631,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_npc_perception_5tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1501,"GoalY":1632,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_npc_patrol_8tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1504,"GoalY":1628,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_britain_harbor_inlet_swim","MapId":1,"StartX":1408,"StartY":1770,"StartZ":-5,"GoalX":1414,"GoalY":1764,"GoalZ":-5,"CanSwim":true,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
