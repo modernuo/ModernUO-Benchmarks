@@ -35,6 +35,28 @@ dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release 
 
 Results land in `BenchmarkDotNet.Artifacts/`.
 
+## MaxSearchNodes sweep
+
+`MaxSearchNodesBenchmarks` sweeps the A\* node-expansion budget
+(`BitmapAStarAlgorithm.MaxSearchNodes`, the `pathfinding.maxSearchNodes` shard
+setting, default 1000) over three shapes to size it without perf regressions:
+
+- **open** — short open-terrain path; A\* terminates on goal-found, so this is
+  budget-insensitive (the control — raising the budget must not slow it).
+- **detour** — a ~33-step walled-off route around the Britain Inn; returns NULL
+  below ~500 expansions, found above it.
+- **fail** — an unreachable upstairs goal; the search runs to the full budget, so
+  this is the worst-case per-`Find` cost. Rises with budget then plateaus (~1500)
+  once the 38-tile window is exhausted.
+
+```
+dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release -- --filter "*MaxSearchNodesBenchmarks*"
+```
+
+**Prerequisite:** the `ModernUO/` submodule must be at a commit that includes the
+`BitmapAStarAlgorithm.MaxSearchNodes` field (the `pathfinding.maxSearchNodes`
+change). Bump the submodule first, or the project won't compile.
+
 ## First-run auto-bake
 
 The bench fixture (`BenchmarkFixture.EnsureWalkabilityCacheBaked`) checks
