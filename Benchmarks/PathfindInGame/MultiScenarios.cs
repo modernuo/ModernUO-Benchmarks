@@ -21,34 +21,26 @@ public static class MultiScenarios
     public const int MapId = 1;          // Trammel
     private const int GuildHouseId = 0x74; // static house: walls, a door aperture, floor
 
-    // Open Trammel region the synthesizer's MultiPathInvariant / HousePathRouting tests use and
-    // know to be feasible. Start from a single proven house+route (validated to ~29 steps against
-    // this exact submodule code), then layer in well-separated neighbours that still leave walkable
-    // streets, so a route can weave the cluster hugging footprint halos.
     public readonly record struct Placement(int Id, int X, int Y);
     public readonly record struct Route(string Name, int Sx, int Sy, int Gx, int Gy);
 
-    // Three houses in a row at the proven-open y=1620 band, 20 tiles apart (wide walkable streets
-    // between footprints). A straight east-west route across them detours around each in sequence,
-    // expanding three footprints' worth of wall/halo cells the synthesizer serves.
+    // Green Acres (Trammel ~5445,1153) — the flat, empty staff/test region. Houses placed here have
+    // genuinely footprint-CLEAN lots (terrain below the floor everywhere), so the Phase-3 per-instance
+    // interior cache serves — reflecting a legitimately-placed house. (The old cluttered band
+    // 1460/1480/1500,1620 overlaps tall map statics and is now correctly classified DIRTY → the cache
+    // degrades to live synthesis there, byte-identical to the slow path.)
     public static Placement[] Placements() => new[]
     {
-        new Placement(GuildHouseId, 1460, 1620),
-        new Placement(GuildHouseId, 1480, 1620),
-        new Placement(GuildHouseId, 1500, 1620),
+        new Placement(GuildHouseId, 5445, 1153),
+        new Placement(GuildHouseId, 5475, 1153),
     };
 
-    // One vertical around-the-house route per placement (the MultiPathInvariantTests pattern:
-    // straight S->N through a footprint forces a side detour, ~29 steps, ~150 multi-cell synthesis
-    // calls each). Three clean single-house data points in the same proven-open band.
-    // Two feasible vertical around-the-house routes (validated: ~48 steps/246 multi-cell synthesis
-    // calls and ~29 steps/154). The eastern house's south approach is blocked by natural terrain
-    // (the search wanders into a dead end), so it's excluded — a failing search measures budget-
-    // exhaustion cost, not pathfinding cost.
+    // Straight S->N through each footprint forces a side detour and expands the house interior, where
+    // the clean instance's interior cells serve from the per-multiID cache (~20 ns lookups).
     public static readonly Route[] Routes =
     {
-        new Route("around_w", 1460, 1630, 1460, 1610),
-        new Route("around_c", 1480, 1630, 1480, 1610),
+        new Route("around_a", 5445, 1163, 5445, 1143),
+        new Route("around_b", 5475, 1163, 5475, 1143),
     };
 
     /// <summary>

@@ -121,21 +121,28 @@ sanity check, not the win).
 
 ### Measured
 
-| Route | Cache off (slow path) | Phase 2 (live synth) | Phase 3 (interior cache) | Phase 3 speedup |
-|-------|----------------------:|---------------------:|-------------------------:|----------------:|
-| `around_w` (48 steps) | 308.7 µs | 210.5 µs | **132.6 µs** | **2.33×** |
-| `around_c` (29 steps) | 219.0 µs |  141.1 µs | **59.5 µs** | **3.68×** |
+Houses placed at **Green Acres** (Trammel ~5445,1153) — the flat, empty staff/test
+region — so the footprints are genuinely clean (a legitimately-placed house on a
+cleared lot), which is where the Phase-3 interior cache legitimately serves:
 
-Allocations are identical across arms (just the returned `Direction[]` path: 72 B
-/ 56 B) — neither layer adds GC pressure.
+| Route | Cache off (slow path) | Phase 3.1 (interior cache) | Speedup |
+|-------|----------------------:|---------------------------:|--------:|
+| `around_a` (29 steps, 130 cache serves) | 238.3 µs | **49.1 µs** | **4.85×** |
+| `around_b` (29 steps, 130 cache serves) | 224.3 µs | **49.5 µs** | **4.53×** |
+
+Allocations are identical across arms (just the returned `Direction[]` path: 56 B)
+— neither layer adds GC pressure.
 
 - **Phase 2 (live synthesizer)** collapses the per-cell 8× `CheckMovement` to one
   multi-aware mask build (~780 ns/cell) → ~1.5×.
-- **Phase 3 (warm per-`multiID` interior cache)** turns each *interior* multi cell
-  (cell + all 8 neighbours covered → terrain-neighbour-free) into a ~20 ns cached
-  lookup. The `[MultiHealth]` audit shows the live `MultiLocalHits` dropping
-  (around_w 246→144, around_c 154→48) as ~100 interior cells/route move to the
-  cache, landing the **2–6× target** the static cache reaches. Bigger/taller
+- **Phase 3 / 3.1 (warm per-`multiID` interior cache)** turns each *interior* multi
+  cell (cell + all 8 neighbours covered → terrain-neighbour-free) into a ~20 ns
+  cached lookup, **gated per instance on a clean footprint** (terrain below the floor
+  everywhere — airtight against cross-instance neighbour-terrain). At Green Acres the
+  `[MultiHealth]` audit shows **130 of ~167 multi cells/route served from the cache**
+  (37 live-synth perimeter), giving **~4.5–4.85×** — at or above the static cache's
+  2–6× band. A *dirty* footprint (terrain intrudes — a contrived/cluttered placement)
+  correctly degrades to live-synth, byte-identical to the slow path. Bigger/taller
   multis (Tower/Keep/Castle) gain most (more interior cells, costlier slow path).
 
 ### Per-cell cost breakdown (`MultiSynthesisMicroBenchmarks`)

@@ -90,7 +90,7 @@ public class MultiPathfindBenchmarks
         cache.MissPromotionThreshold = 1; // eager build so the static base serves hits, not NotBuilt
         try
         {
-            System.Console.Error.WriteLine("[MultiHealth] idx route               result          multiLocalHits");
+            System.Console.Error.WriteLine("[MultiHealth] idx route               result          liveSynth  cacheServe");
             for (var i = 0; i < _routes.Length; i++)
             {
                 for (var w = 0; w < 3; w++)
@@ -98,15 +98,18 @@ public class MultiPathfindBenchmarks
                     BitmapAStarAlgorithm.Instance.Find(_stub, _map, Start(i), Goal(i));
                 }
 
-                var before = cache.GetStats().MultiLocalHits;
+                var s0 = cache.GetStats();
                 var path = BitmapAStarAlgorithm.Instance.Find(_stub, _map, Start(i), Goal(i));
-                var hits = cache.GetStats().MultiLocalHits - before;
+                var s1 = cache.GetStats();
+                var live = s1.MultiLocalHits - s0.MultiLocalHits;
+                var served = s1.MultiMaskCacheHits - s0.MultiMaskCacheHits;
 
                 var result = path == null ? "NO PATH" : $"{path.Length} steps";
                 var flag = path == null ? "  <-- SUSPECT (coords/blocked)"
-                    : hits == 0 ? "  <-- no multi cells expanded" : "";
+                    : live + served == 0 ? "  <-- no multi cells expanded"
+                    : served == 0 ? "  <-- DIRTY (cache not serving)" : "";
                 System.Console.Error.WriteLine(
-                    $"[MultiHealth] [{i,2}] {_routes[i].Name,-18} {result,-15} {hits,8}{flag}"
+                    $"[MultiHealth] [{i,2}] {_routes[i].Name,-18} {result,-15} {live,8} {served,10}{flag}"
                 );
             }
         }
