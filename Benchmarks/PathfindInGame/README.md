@@ -119,17 +119,24 @@ dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release 
 cells through the slow path and the delta collapses to ~0 (a useful baseline
 sanity check, not the win).
 
-### Measured (synthesizer submodule, ShortRun warm)
+### Measured
 
-| Route | multi cells | Cache off (slow path) | Cache on (synthesizer) | Speedup |
-|-------|------------:|----------------------:|-----------------------:|--------:|
-| `around_w` (48 steps) | 246 | 317.9 µs | 210.5 µs | **1.51×** |
-| `around_c` (29 steps) | 154 | 205.2 µs | 141.1 µs | **1.45×** |
+| Route | Cache off (slow path) | Phase 2 (live synth) | Phase 3 (interior cache) | Phase 3 speedup |
+|-------|----------------------:|---------------------:|-------------------------:|----------------:|
+| `around_w` (48 steps) | 308.7 µs | 210.5 µs | **132.6 µs** | **2.33×** |
+| `around_c` (29 steps) | 219.0 µs |  141.1 µs | **59.5 µs** | **3.68×** |
 
 Allocations are identical across arms (just the returned `Direction[]` path: 72 B
-/ 56 B) — the synthesizer adds no GC pressure. The win is collapsing the per-cell
-8× `CheckMovement` to a single multi-aware mask build, so it scales with the count
-of multi-covered cells a search expands.
+/ 56 B) — neither layer adds GC pressure.
+
+- **Phase 2 (live synthesizer)** collapses the per-cell 8× `CheckMovement` to one
+  multi-aware mask build (~780 ns/cell) → ~1.5×.
+- **Phase 3 (warm per-`multiID` interior cache)** turns each *interior* multi cell
+  (cell + all 8 neighbours covered → terrain-neighbour-free) into a ~20 ns cached
+  lookup. The `[MultiHealth]` audit shows the live `MultiLocalHits` dropping
+  (around_w 246→144, around_c 154→48) as ~100 interior cells/route move to the
+  cache, landing the **2–6× target** the static cache reaches. Bigger/taller
+  multis (Tower/Keep/Castle) gain most (more interior cells, costlier slow path).
 
 ### Per-cell cost breakdown (`MultiSynthesisMicroBenchmarks`)
 
