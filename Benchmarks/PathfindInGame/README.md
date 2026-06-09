@@ -93,14 +93,52 @@ first-touch (a peripheral `WalkabilityChunk`/strata materialized when the failin
 search runs to the window edge, only reached at high budget). Tiny and transient;
 it's one more reason to keep the budget modest.
 
+## Multi-pathfinding (synthesizer) benchmark
+
+`MultiPathfindBenchmarks` measures `BitmapAStarAlgorithm.Find` over routes that
+detour around placed houses, with the pathfinding cache **on** vs **off**:
+
+- **Cache on** — each multi-covered cell (footprint + 1-cell halo) returns
+  `Fallthrough_Multi` and is served by the single-pass `ComputeMultiMaskAt`
+  synthesizer (one mask build per cell).
+- **Cache off** — each such cell takes the slow path's **8×** per-cell
+  `CheckMovement`.
+
+The fixture places a row of guild houses (`MultiScenarios`, via the lightweight
+`BenchMulti : BaseMulti`); the routes are validated by a one-time `[MultiHealth]`
+stderr audit that asserts each finds a path **and** expands multi cells
+(`MultiLocalHits > 0`) — a route that returns NO PATH or hits zero multi cells is
+a degenerate fixture and excluded.
+
+```
+dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release -- --filter "*MultiPathfindBenchmarks*"
+```
+
+**Requires the `ModernUO/` submodule at the synthesizer branch**
+(`server/pathfinding-multi-tests`). Against plain `main` both arms route multi
+cells through the slow path and the delta collapses to ~0 (a useful baseline
+sanity check, not the win).
+
+### Measured (synthesizer submodule, ShortRun warm)
+
+| Route | multi cells | Cache off (slow path) | Cache on (synthesizer) | Speedup |
+|-------|------------:|----------------------:|-----------------------:|--------:|
+| `around_w` (48 steps) | 246 | 317.9 µs | 210.5 µs | **1.51×** |
+| `around_c` (29 steps) | 154 | 205.2 µs | 141.1 µs | **1.45×** |
+
+Allocations are identical across arms (just the returned `Direction[]` path: 72 B
+/ 56 B) — the synthesizer adds no GC pressure. The win is collapsing the per-cell
+8× `CheckMovement` to a single multi-aware mask build, so it scales with the count
+of multi-covered cells a search expands.
+
 ## First-run auto-bake
 
-The bench fixture (`BenchmarkFixture.EnsureWalkabilityCacheBaked`) checks
-that each map referenced by the corpus has a fresh `<mapId>.swb` file with a
-matching tile-data hash. If the file is missing, stale, or malformed, the
-fixture calls `Server.Engines.Pathing.Cache.WalkabilityCacheBaker.BakeMap`
-in-process. First run takes ~15 s per map; subsequent runs reuse the cache
-file and start instantly.
+The bench fixture (`BenchmarkFixture.EnsureBakedFiles`) checks that each map
+referenced by the corpus has a fresh, fingerprint-valid `<mapId>.swb` file by
+trying to open it (`StepCache.TryOpenLazyReader` → `StepCacheFile.OpenForLazy`
+validates the embedded TileData fingerprint). If it can't open, the fixture bakes
+in-process via `Server.Engines.Pathing.Cache.StepCache.BakeMap`. First run takes
+~15 s per map; subsequent runs reuse the cache file and start instantly.
 
 Override the cache directory with `MODERNUO_PATHFINDING_DATA_DIR`. Override
 the UO client data with `MODERNUO_TEST_DATA_DIR` (defaults to
