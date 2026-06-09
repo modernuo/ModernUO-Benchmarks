@@ -93,14 +93,96 @@ first-touch (a peripheral `WalkabilityChunk`/strata materialized when the failin
 search runs to the window edge, only reached at high budget). Tiny and transient;
 it's one more reason to keep the budget modest.
 
+## Multi-pathfinding (synthesizer) benchmark
+
+`MultiPathfindBenchmarks` measures `BitmapAStarAlgorithm.Find` over routes that
+detour around placed houses, with the pathfinding cache **on** vs **off**:
+
+- **Cache on** — each multi-covered cell (footprint + 1-cell halo) returns
+  `Fallthrough_Multi` and is served by the single-pass `ComputeMultiMaskAt`
+  synthesizer (one mask build per cell).
+- **Cache off** — each such cell takes the slow path's **8×** per-cell
+  `CheckMovement`.
+
+The fixture places a row of guild houses (`MultiScenarios`, via the lightweight
+`BenchMulti : BaseMulti`); the routes are validated by a one-time `[MultiHealth]`
+stderr audit that asserts each finds a path **and** expands multi cells
+(`MultiLocalHits > 0`) — a route that returns NO PATH or hits zero multi cells is
+a degenerate fixture and excluded.
+
+```
+dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release -- --filter "*MultiPathfindBenchmarks*"
+```
+
+**Requires the `ModernUO/` submodule at the synthesizer branch**
+(`server/pathfinding-multi-tests`). Against plain `main` both arms route multi
+cells through the slow path and the delta collapses to ~0 (a useful baseline
+sanity check, not the win).
+
+### Measured
+
+Houses placed at **Green Acres** (Trammel ~5445,1153) — the flat, empty staff/test
+region — so the footprints are genuinely clean (a legitimately-placed house on a
+cleared lot), which is where the Phase-3 interior cache legitimately serves:
+
+| Route | Cache off (slow path) | Phase 3.1 (interior cache) | Speedup |
+|-------|----------------------:|---------------------------:|--------:|
+| `around_a` (29 steps, 130 cache serves) | 238.3 µs | **49.1 µs** | **4.85×** |
+| `around_b` (29 steps, 130 cache serves) | 224.3 µs | **49.5 µs** | **4.53×** |
+
+Allocations are identical across arms (just the returned `Direction[]` path: 56 B)
+— neither layer adds GC pressure.
+
+- **Phase 2 (live synthesizer)** collapses the per-cell 8× `CheckMovement` to one
+  multi-aware mask build (~780 ns/cell) → ~1.5×.
+- **Phase 3 / 3.1 (warm per-`multiID` interior cache)** turns each *interior* multi
+  cell (cell + all 8 neighbours covered → terrain-neighbour-free) into a ~20 ns
+  cached lookup, **gated per instance on a clean footprint** (terrain below the floor
+  everywhere — airtight against cross-instance neighbour-terrain). At Green Acres the
+  `[MultiHealth]` audit shows **130 of ~167 multi cells/route served from the cache**
+  (37 live-synth perimeter), giving **~4.5–4.85×** — at or above the static cache's
+  2–6× band. A *dirty* footprint (terrain intrudes — a contrived/cluttered placement)
+  correctly degrades to live-synth, byte-identical to the slow path. Bigger/taller
+  multis (Tower/Keep/Castle) gain most (more interior cells, costlier slow path).
+
+### Per-cell cost breakdown (`MultiSynthesisMicroBenchmarks`)
+
+Why is the end-to-end win "only" ~1.5× and not the 2–6× the static cache shows?
+Because per multi-covered cell the synthesizer is a cheaper *computation*, not a
+cached *lookup*. Per-cell, on a covered footprint cell of each multi:
+
+| Multi (footprint) | Synthesize (1 build) | Slow path (8× CheckMovement) | Per-cell speedup |
+|-------------------|---------------------:|-----------------------------:|-----------------:|
+| GuildHouse (15×15) | 737 ns | 857 ns   | 1.16× |
+| Tower (24×16)      | 783 ns | 1,139 ns | 1.45× |
+| Keep (24×24)       | 771 ns | 1,011 ns | 1.31× |
+| Castle (31×32)     | 789 ns | 1,194 ns | 1.51× |
+
+Two findings:
+
+1. **The synthesizer cost is ~flat (~780 ns) across multi sizes** — at one cell it
+   resolves only that cell's tile stack, so the multi's overall size/height doesn't
+   matter. The slow path's 8× `CheckMovement` instead **grows with multi
+   complexity** (more tiles + Z-levels per cell): Castle/Tower ~1,150–1,200 ns vs
+   GuildHouse 857 ns. So **bigger/taller multis win more** (1.16× for a guild house
+   up to 1.51× for a castle) — a route hugging a castle beats one around a cottage.
+2. **The synthesizer is the dominant cache-on cost** (~88% of a multi-heavy `Find`:
+   246 cells × ~750 ns ≈ 185 µs of the 210 µs `around_w` arm). It's still a live
+   ~780 ns compute, not a ~12 ns cache hit. **That is the headroom for baking multi
+   masks from `multi.mul`:** a baked per-`multiID` lookup would replace the ~780 ns
+   synthesis with a static-cache-style hit, lifting the multi win from ~1.5× toward
+   the static cache's 2–6×+. It applies to fixed multis (boats, classic/contest
+   houses, camps — immutable MCL in the art file); foundations (per-instance runtime
+   `DesignState`) and boundary cells still resolve live.
+
 ## First-run auto-bake
 
-The bench fixture (`BenchmarkFixture.EnsureWalkabilityCacheBaked`) checks
-that each map referenced by the corpus has a fresh `<mapId>.swb` file with a
-matching tile-data hash. If the file is missing, stale, or malformed, the
-fixture calls `Server.Engines.Pathing.Cache.WalkabilityCacheBaker.BakeMap`
-in-process. First run takes ~15 s per map; subsequent runs reuse the cache
-file and start instantly.
+The bench fixture (`BenchmarkFixture.EnsureBakedFiles`) checks that each map
+referenced by the corpus has a fresh, fingerprint-valid `<mapId>.swb` file by
+trying to open it (`StepCache.TryOpenLazyReader` → `StepCacheFile.OpenForLazy`
+validates the embedded TileData fingerprint). If it can't open, the fixture bakes
+in-process via `Server.Engines.Pathing.Cache.StepCache.BakeMap`. First run takes
+~15 s per map; subsequent runs reuse the cache file and start instantly.
 
 Override the cache directory with `MODERNUO_PATHFINDING_DATA_DIR`. Override
 the UO client data with `MODERNUO_TEST_DATA_DIR` (defaults to

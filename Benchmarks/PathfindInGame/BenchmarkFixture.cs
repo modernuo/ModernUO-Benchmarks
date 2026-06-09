@@ -56,7 +56,16 @@ public static class BenchmarkFixture
         // and the algorithm treats everything as walkable (meaningless 86ns paths).
         ForceLoadTileData();
 
+        // Multi component data must be loaded before placing houses/boats — BaseMulti.Components
+        // resolves through MultiData.GetComponents. TileData is already force-loaded above.
+        MultiData.Configure();
+
         EnsureBakedFiles();
+
+        // Place the benchmark's houses into the live world AFTER the static .swb is baked: the bake
+        // is static-only (multis are layered at query time via Fallthrough_Multi), so placement
+        // does not affect the baked file. Gives the multi-pathfinding benchmark something to route.
+        MultiScenarios.Place(Map.Maps[MultiScenarios.MapId]);
 
         _initialized = true;
     }
