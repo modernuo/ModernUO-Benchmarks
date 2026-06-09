@@ -13,11 +13,9 @@ as they would on a live shard.
 
 ## Submodule prerequisite
 
-The `ModernUO/` submodule pins to a SHA on the `feat/ai-pathfinding-optimization`
-branch. Until that branch merges upstream, you'll need either write access to
-`modernuo/ModernUO.git` (push the branch) or a fork URL configured in
-`.gitmodules`. `git submodule update --init` will fail with "remote ref does
-not exist" otherwise.
+The `ModernUO/` submodule pins to a SHA on `modernuo/ModernUO` `main` (the
+pathfinding step-cache work merged upstream in #2478). `git submodule update
+--init` works against the public remote — no fork URL or write access required.
 
 ## Running
 
@@ -56,6 +54,44 @@ dotnet run --project Benchmarks/PathfindInGame/PathfindInGame.csproj -c Release 
 **Prerequisite:** the `ModernUO/` submodule must be at a commit that includes the
 `BitmapAStarAlgorithm.MaxSearchNodes` field (the `pathfinding.maxSearchNodes`
 change). Bump the submodule first, or the project won't compile.
+
+### Measured
+
+| MaxSearchNodes | open (0) | detour (1) | fail (2) | open alloc | detour alloc | fail alloc |
+|---:|--:|--:|--:|--:|--:|--:|
+| 300  |  2.10 µs |  22.1 µs |  22.3 µs | 32 B | 0 B  | 0 B  |
+| 500  |  2.16 µs |  23.2 µs |  33.5 µs | 32 B | 64 B | 0 B  |
+| 1000 |  2.17 µs |  22.5 µs |  79.4 µs | 32 B | 64 B | 0 B  |
+| 1500 |  4.27 µs* | 45.2 µs* | 183.8 µs* | 32 B | 64 B | 72 B |
+| 2000 |  4.44 µs* | 44.8 µs* | 186.8 µs* | 32 B | 64 B | 72 B |
+
+\* The 1500/2000 rows are ~2× inflated by thermal/clock drift during the later
+`[Params]` runs — the `open` control is budget-invariant by construction yet
+doubled, so discount that whole column ~2× (or re-run those two params isolated).
+
+**Conclusions:**
+
+- **`open` is budget-insensitive** (~2 µs) — the cap never touches the common case;
+  successful searches terminate on goal-found.
+- **`detour` needs ≥ 500** to navigate the ~33-step walled-off indoor route; at 300
+  it bails and returns `null`. Default 1000 gives 2× margin.
+- **`fail` (unreachable) cost rises then plateaus** at window-exhaustion (~1500–1700
+  nodes). At 1000 the worst-case failed search is ~79 µs because it bails *before*
+  exhausting; pushing to 1500+ raises it to the ~185 µs (≈ ~90 µs de-thermalled)
+  plateau for **zero** solving benefit. So **1000 is near-optimal** — above the
+  ~500 needed to solve indoor routes, below the window-exhaustion cost ceiling.
+
+**Allocation note.** The only *intentional* allocation in `Find` is the returned
+`Direction[]` path (`open` ~6 steps → 32 B, `detour` ~33 steps → 64 B; `detour@300`
+= 0 B because it returns `null`). The internal A\* buffers (`_nodes`, `_nodeStates`,
+`_path`, `_openQueue`) are `static` singletons — zero-alloc. The search loop itself
+is zero-alloc: a single warm *failing* `Find` allocates 0 B at every budget
+(300→3000), verified with `GC.GetAllocatedBytesForCurrentThread`. The surprising
+`fail` 72 B at ≥ 1500 is therefore **not** a result array (that scenario returns
+`null` at all budgets) and **not** the search loop — it's an incidental cache
+first-touch (a peripheral `WalkabilityChunk`/strata materialized when the failing
+search runs to the window edge, only reached at high budget). Tiny and transient;
+it's one more reason to keep the budget modest.
 
 ## First-run auto-bake
 
@@ -152,24 +188,14 @@ production steady-state path doesn't touch the GC. `PrecomputedColdTier4`'s
 allocations come from the per-chunk `WalkabilityChunk` + `Strata` buffers
 materialised on first-touch from the file; LRU eviction reclaims them.
 
-### Per-call cost (companion `Benchmarks/StaticWalkabilityCache/`)
+### Per-call cost
 
-For the per-call breakdown of cache vs slow-path cost, see the sibling
-`StaticWalkabilityCache` benchmark. Headline numbers from the same run:
-
-```
-| Method              |          Mean | Allocated |
-|-------------------- |--------------:|----------:|
-| CacheHit_Warm       |      12.08 ns |         - |  ← cache-hit hot path
-| Cache_FullRoundTrip |      14.21 ns |         - |  ← full TryGetMask incl. guards
-| MovementImpl_Direct |      66.11 ns |         - |  ← slow-path single direction
-| Baker_Direct        |     259.09 ns |         - |  ← one cell ComputeMaskAt
-| CacheHit_Cold       | 792,168.57 ns |   11,184 B|  ← Clear + first hit (chunk build)
-```
-
-A single cache hit costs **~5.5× less** than a single slow-path direction
-call. A's Find typically expands hundreds of cells per pathfind, so the
-per-call savings compound into the path-level deltas above.
+The companion per-call micro-benchmark (`StaticWalkabilityCache`) has been
+removed; its cache-vs-slow-path breakdown is superseded by the end-to-end
+numbers above. A single warm cache hit is roughly an order of magnitude cheaper
+than a slow-path `MovementImpl.Check` direction call, and A*'s `Find` expands
+hundreds of cells per pathfind, so the per-call savings compound into the
+path-level deltas.
 
 ## Disk footprint and bake time
 
@@ -204,5 +230,5 @@ five scenarios.
 ## File-format reference
 
 The `<mapId>.swb` format is documented at the top of
-`Server.Engines.Pathing.Cache.PrecomputedCacheFile`. Current version: 6.
-The bake side lives in `Server.Engines.Pathing.Cache.WalkabilityCacheBaker`.
+`Server.Engines.Pathing.Cache.StepCacheFile`. The bake side lives in
+`Server.Engines.Pathing.Cache.StepCache.BakeMap`.

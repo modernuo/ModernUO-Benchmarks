@@ -6,7 +6,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
-using Server.PathAlgorithms.BitmapAStar;
+using Server.PathAlgorithms;
 using Server.PathAlgorithms.FastAStar;
 
 namespace PathfindInGame;
@@ -79,9 +79,73 @@ public class PathfindBenchmarks
 
         StepCache.Instance.CloseLazyReaders();
 
+        ReportCorpusHealthOnce();
+
         if (Provider is PathProvider.LazyCold or PathProvider.LazyWarm)
         {
             OpenLazyReadersForCorpus();
+        }
+    }
+
+    private static bool _healthReported;
+
+    /// <summary>
+    /// One-time corpus audit (prints to stderr, not measured). Hand-authored scenarios drift:
+    /// an endpoint Z can land over water or inside a wall, producing a degenerate "no path"
+    /// search whose timing is meaningless. For each scenario this runs one warm Find with the
+    /// real creature flags and reports whether a path was found and the cache fallthrough
+    /// fraction, so a glance at the log shows which rows to trust. SUSPECT = no path (bad
+    /// coords/Z); high fallthrough = the cache can't serve the route (e.g. off-surface Z).
+    /// </summary>
+    private void ReportCorpusHealthOnce()
+    {
+        if (_healthReported)
+        {
+            return;
+        }
+        _healthReported = true;
+
+        var cache = StepCache.Instance;
+        var previousThreshold = cache.MissPromotionThreshold;
+        cache.MissPromotionThreshold = 1; // eager build — judge the cache's best case
+
+        try
+        {
+            Console.Error.WriteLine("[CorpusHealth] idx scenario                          result      cacheFallthrough");
+            for (var i = 0; i < _staticScenarios.Length; i++)
+            {
+                var s = _staticScenarios[i];
+                var stub = _stubMobiles[i];
+                var map = s.ResolveMap();
+
+                for (var w = 0; w < 3; w++)
+                {
+                    BitmapAStarAlgorithm.Instance.Find(stub, map, s.Start, s.Goal);
+                }
+
+                var before = cache.GetStats();
+                var path = BitmapAStarAlgorithm.Instance.Find(stub, map, s.Start, s.Goal);
+                var after = cache.GetStats();
+
+                var served = after.Hits - before.Hits
+                             + (after.MissesNotBuilt - before.MissesNotBuilt)
+                             + (after.MissesDirtyRebuild - before.MissesDirtyRebuild);
+                var fallthrough = after.FallthroughMultiZ - before.FallthroughMultiZ
+                                  + (after.FallthroughSourceZMismatch - before.FallthroughSourceZMismatch)
+                                  + (after.FallthroughOffMap - before.FallthroughOffMap)
+                                  + (after.FallthroughNotBuilt - before.FallthroughNotBuilt);
+                var total = served + fallthrough;
+                var pct = total == 0 ? 0 : 100.0 * fallthrough / total;
+
+                var result = path == null ? "NO PATH" : $"{path.Length} steps";
+                var flag = path == null ? "  <-- SUSPECT (bad coords/Z?)" : pct > 50 ? "  <-- high fallthrough" : "";
+                Console.Error.WriteLine($"[CorpusHealth] [{i,2}] {s.Name,-34} {result,-11} {pct,5:F1}%{flag}");
+            }
+        }
+        finally
+        {
+            cache.MissPromotionThreshold = previousThreshold;
+            cache.ClearResidentChunks();
         }
     }
 

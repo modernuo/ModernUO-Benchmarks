@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Server;
 using Server.Engines.Pathing.Cache;
-using Server.PathAlgorithms.BitmapAStar;
+using Server.PathAlgorithms;
 
 namespace PathfindInGame;
 
@@ -59,7 +59,7 @@ public class MaxSearchNodesBenchmarks
     public void Setup()
     {
         BenchmarkFixture.EnsureInitialized();
-        BitmapAStarAlgorithm.MaxSearchNodes = MaxSearchNodes;
+        BitmapAStarAlgorithm.Instance.MaxSearchNodes = MaxSearchNodes;
 
         _map = Map.Maps[1]; // Trammel
         _stub = new StubCreature();

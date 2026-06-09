@@ -64,9 +64,19 @@ public static class BenchmarkFixture
     /// <summary>
     /// Make sure each map referenced by the bench corpus has a fresh, valid
     /// &lt;mapId&gt;.swb file before the harness starts measuring. Calls
-    /// <see cref="StepCache.BakeMap"/> in-process if the file is missing or has
-    /// a stale Fingerprint. Single source of truth — no separate bake program.
+    /// <see cref="StepCache.BakeMap"/> in-process if the file is missing or stale.
+    /// Single source of truth — no separate bake program.
     /// </summary>
+    /// <remarks>
+    /// Freshness is decided by trying to open the file: <see cref="StepCache.TryOpenLazyReader"/>
+    /// goes through <c>StepCacheFile.OpenForLazy</c>, which validates the embedded TileData
+    /// fingerprint and rejects a missing / stale / malformed file (returns false). So "can we
+    /// open it?" IS the freshness check — there is no separate fingerprint compare (the old
+    /// <c>ComputeLiveFingerprint</c>/<c>TryReadFingerprintFromFile</c> pair was removed by the
+    /// file-fingerprint rework in #2478). Mirrors the live boot path
+    /// (<c>PathCacheCommands.Initialize</c>: <c>HasLazyReader</c> else <c>BakeMap</c> then
+    /// <c>AutoLoadAtStartup</c>).
+    /// </remarks>
     private static void EnsureBakedFiles()
     {
         var dir = ResolvePathfindingDataDir();
@@ -78,9 +88,9 @@ public static class BenchmarkFixture
         foreach (var mapId in mapsToBake)
         {
             var path = Path.Combine(dir, $"{mapId}.swb");
-            var liveFingerprint = StepCache.ComputeLiveFingerprint(mapId);
-            if (StepCache.TryReadFingerprintFromFile(path, out var existingFingerprint)
-                && existingFingerprint == liveFingerprint)
+
+            // A fingerprint-valid file opens cleanly → nothing to bake.
+            if (StepCache.Instance.TryOpenLazyReader(path, mapId))
             {
                 continue;
             }
@@ -93,11 +103,12 @@ public static class BenchmarkFixture
                 $"[BenchmarkFixture] Bake complete in {sw.Elapsed.TotalSeconds:F2}s ({written} chunks)"
             );
 
-            // Drop the chunks BakeMap left resident so the bench iterations start from
-            // a known cold state. The .swb file is now on disk; lazy readers in the
-            // harness's GlobalSetup will open it.
-            StepCache.Instance.Clear();
+            StepCache.Instance.ClearResidentChunks();
         }
+
+        // Leave a clean slate: drop resident chunks and close the freshness-probe readers.
+        // The harness's GlobalSetup opens its own lazy readers per provider.
+        StepCache.Instance.Clear();
     }
 
     /// <summary>

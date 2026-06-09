@@ -1,8 +1,8 @@
-{"Name":"trammel_open_plain","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1530,"GoalY":1660,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
-{"Name":"trammel_dense_forest_yew","MapId":1,"StartX":585,"StartY":845,"StartZ":0,"GoalX":615,"GoalY":875,"GoalZ":0,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
-{"Name":"trammel_corridor_brit_sewer","MapId":1,"StartX":1418,"StartY":1696,"StartZ":-32,"GoalX":1450,"GoalY":1720,"GoalZ":-32,"CanSwim":false,"CanFly":false,"CanOpenDoors":true,"CanMoveOverObstacles":false}
-{"Name":"trammel_multifloor_brit_inn","MapId":1,"StartX":1494,"StartY":1626,"StartZ":20,"GoalX":1502,"GoalY":1632,"GoalZ":20,"CanSwim":false,"CanFly":false,"CanOpenDoors":true,"CanMoveOverObstacles":false}
-{"Name":"trammel_britain_causeway","MapId":1,"StartX":1478,"StartY":1647,"StartZ":0,"GoalX":1502,"GoalY":1647,"GoalZ":0,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_open_plain","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1514,"GoalY":1628,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_brit_sewer_walkway","MapId":1,"StartX":6034,"StartY":1479,"StartZ":5,"GoalX":6045,"GoalY":1471,"GoalZ":5,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_dense_forest","MapId":1,"StartX":1521,"StartY":912,"StartZ":0,"GoalX":1521,"GoalY":936,"GoalZ":0,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_building_second_floor","MapId":1,"StartX":1494,"StartY":1622,"StartZ":40,"GoalX":1502,"GoalY":1622,"GoalZ":40,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
+{"Name":"trammel_britain_causeway","MapId":1,"StartX":1488,"StartY":1641,"StartZ":40,"GoalX":1475,"GoalY":1641,"GoalZ":40,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_deep_sea_serpent_open_ocean","MapId":1,"StartX":2368,"StartY":2799,"StartZ":-5,"GoalX":2400,"GoalY":2799,"GoalZ":-5,"CanSwim":true,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_pet_follow_2tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1498,"GoalY":1629,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
 {"Name":"trammel_combat_adjust_3tile","MapId":1,"StartX":1496,"StartY":1628,"StartZ":10,"GoalX":1499,"GoalY":1631,"GoalZ":10,"CanSwim":false,"CanFly":false,"CanOpenDoors":false,"CanMoveOverObstacles":false}
