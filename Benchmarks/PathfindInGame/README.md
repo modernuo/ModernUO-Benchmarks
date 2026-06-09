@@ -131,6 +131,36 @@ Allocations are identical across arms (just the returned `Direction[]` path: 72 
 8× `CheckMovement` to a single multi-aware mask build, so it scales with the count
 of multi-covered cells a search expands.
 
+### Per-cell cost breakdown (`MultiSynthesisMicroBenchmarks`)
+
+Why is the end-to-end win "only" ~1.5× and not the 2–6× the static cache shows?
+Because per multi-covered cell the synthesizer is a cheaper *computation*, not a
+cached *lookup*. Per-cell, on a covered footprint cell of each multi:
+
+| Multi (footprint) | Synthesize (1 build) | Slow path (8× CheckMovement) | Per-cell speedup |
+|-------------------|---------------------:|-----------------------------:|-----------------:|
+| GuildHouse (15×15) | 737 ns | 857 ns   | 1.16× |
+| Tower (24×16)      | 783 ns | 1,139 ns | 1.45× |
+| Keep (24×24)       | 771 ns | 1,011 ns | 1.31× |
+| Castle (31×32)     | 789 ns | 1,194 ns | 1.51× |
+
+Two findings:
+
+1. **The synthesizer cost is ~flat (~780 ns) across multi sizes** — at one cell it
+   resolves only that cell's tile stack, so the multi's overall size/height doesn't
+   matter. The slow path's 8× `CheckMovement` instead **grows with multi
+   complexity** (more tiles + Z-levels per cell): Castle/Tower ~1,150–1,200 ns vs
+   GuildHouse 857 ns. So **bigger/taller multis win more** (1.16× for a guild house
+   up to 1.51× for a castle) — a route hugging a castle beats one around a cottage.
+2. **The synthesizer is the dominant cache-on cost** (~88% of a multi-heavy `Find`:
+   246 cells × ~750 ns ≈ 185 µs of the 210 µs `around_w` arm). It's still a live
+   ~780 ns compute, not a ~12 ns cache hit. **That is the headroom for baking multi
+   masks from `multi.mul`:** a baked per-`multiID` lookup would replace the ~780 ns
+   synthesis with a static-cache-style hit, lifting the multi win from ~1.5× toward
+   the static cache's 2–6×+. It applies to fixed multis (boats, classic/contest
+   houses, camps — immutable MCL in the art file); foundations (per-instance runtime
+   `DesignState`) and boundary cells still resolve live.
+
 ## First-run auto-bake
 
 The bench fixture (`BenchmarkFixture.EnsureBakedFiles`) checks that each map
