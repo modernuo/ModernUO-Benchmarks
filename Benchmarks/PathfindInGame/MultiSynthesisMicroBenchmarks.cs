@@ -37,6 +37,7 @@ public class MultiSynthesisMicroBenchmarks
         Tower = 0x7A,
         Keep = 0x7C,
         Castle = 0x7E,
+        LargeBoat = 0x10, // biggest implemented ship deck — proxy for a galleon (per-cell cost is multi-type-agnostic)
     }
 
     // multiID -> placement origin. Spaced wide enough that even the Castle (~31x31) footprints
@@ -47,6 +48,7 @@ public class MultiSynthesisMicroBenchmarks
         (MultiKind.Tower, 1430, 1700),
         (MultiKind.Keep, 1480, 1700),
         (MultiKind.Castle, 1560, 1700),
+        (MultiKind.LargeBoat, 1620, 1700),
     };
 
     private static readonly Dictionary<MultiKind, BenchMulti> _placed = new();
@@ -59,7 +61,7 @@ public class MultiSynthesisMicroBenchmarks
     private sbyte _z;
     private Point3D _loc;
 
-    [Params(MultiKind.Guild, MultiKind.Tower, MultiKind.Keep, MultiKind.Castle)]
+    [Params(MultiKind.Guild, MultiKind.Tower, MultiKind.Keep, MultiKind.Castle, MultiKind.LargeBoat)]
     public MultiKind Kind;
 
     [GlobalSetup]
